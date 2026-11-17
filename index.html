@@ -36,6 +36,107 @@ button.secondary{background:#5b3448}.hint{color:#382b34;font-size:14px;font-weig
 <button class="secondary" onclick="submitOrder()">تأكيد تفاصيل الطلب</button><p id="notice" class="hint"></p>
 </section>
 </main>
+  
+const SUPABASE_FUNCTION_URL =
+  "https://nuyszbvrhrbqnlnxaibu.supabase.co/functions/v1/bright-responder";
+
+// ضعي هنا Publishable key من Supabase، وليس Secret key
+const SUPABASE_PUBLISHABLE_KEY = "ضعي_المفتاح_العام_هنا";
+
+// سنضع معرّف المنتج الحقيقي بعد إضافته إلى قاعدة البيانات
+const SHAM_PRODUCT_ID = "نضع_معرف_المنتج_هنا";
+
+window.submitOrder = async function () {
+  const n = document.getElementById("name").value.trim();
+  const p = document.getElementById("phone").value.trim();
+  const m = document.getElementById("method").value;
+
+  if (!cart.length) {
+    alert("أضيفي منتجاً إلى السلة أولاً");
+    return;
+  }
+
+  if (!n || !p || !m) {
+    alert("كمّلي الاسم ورقم الهاتف وطريقة التوصيل");
+    return;
+  }
+
+  let governorate = "";
+  let deliveryLocation = "";
+  let address = "";
+
+  if (m === "branch") {
+    governorate = document.getElementById("governorate").value;
+    deliveryLocation = document.getElementById("branch").value;
+    address = deliveryLocation;
+
+    if (!governorate || !deliveryLocation) {
+      alert("اختاري المحافظة والفرع");
+      return;
+    }
+  } else if (m === "courier") {
+    governorate = document.getElementById("courierGov").value;
+    deliveryLocation = document.getElementById("locality").value.trim();
+    address = deliveryLocation;
+
+    if (!governorate || !address) {
+      alert("كمّلي المحافظة والعنوان");
+      return;
+    }
+  } else {
+    alert("اختاري طريقة توصيل صحيحة");
+    return;
+  }
+
+  if (
+    SUPABASE_PUBLISHABLE_KEY.includes("ضعي_") ||
+    SHAM_PRODUCT_ID.includes("نضع_")
+  ) {
+    alert("لسا ناقص إعداد مفتاح الربط ومعرّف المنتج");
+    return;
+  }
+
+  const payload = {
+    customer_name: n,
+    phone: p,
+    governorate,
+    address,
+    delivery_method: m,
+    delivery_location: deliveryLocation,
+    items: cart.map(item => ({
+      product_id: SHAM_PRODUCT_ID,
+      color_name: item.color,
+      size: item.size,
+      quantity: 1
+    }))
+  };
+
+  try {
+    const response = await fetch(SUPABASE_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_PUBLISHABLE_KEY,
+        "Authorization": "Bearer " + SUPABASE_PUBLISHABLE_KEY
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "تعذر إرسال الطلب");
+    }
+
+    document.getElementById("notice").textContent =
+      "تم استلام طلبك بنجاح 🩷 رقم الطلب: " + result.order_id;
+
+    alert("وصل طلبك بنجاح إلى شام ستايل 🩷");
+  } catch (error) {
+    alert(error.message || "حدث خطأ، حاولي مرة أخرى");
+  }
+};
+  
 <script>
 const branchMap={
 'اللاذقية':['8 آذار','الجامعة (سبيرو)','الزراعة','سوق التجار','الرمل الشمالي','بوقا'],
