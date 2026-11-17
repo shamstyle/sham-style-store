@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>إدارة شام ستايل</title>
+<style>
+:root{--p:#d96f96;--pale:#fff3f7;--ink:#39343a;--line:#efdce4}*{box-sizing:border-box}body{margin:0;background:#fff8fa;color:var(--ink);font-family:system-ui,Tahoma,Arial}
+header{padding:20px;text-align:center;background:#f8e7ee;border-bottom:1px solid var(--line)}h1{margin:0;color:#b84d79;font-size:25px}.sub{font-size:13px;color:#78616c;margin-top:5px}
+main{max-width:850px;margin:auto;padding:16px}.box{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:15px}
+h2{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:1/-1}label{display:block;font-size:13px;font-weight:750;margin:7px 0 5px}input,textarea{width:100%;border:1px solid #e6d6dd;border-radius:10px;padding:11px;font:inherit}button{border:0;border-radius:10px;padding:11px 14px;font:inherit;font-weight:800;cursor:pointer}.save{background:var(--p);color:#fff;width:100%;margin-top:13px}.secondary{background:#f6e7ed;color:#71445a}.danger{background:#fff0f0;color:#a22}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.product{border:1px solid var(--line);border-radius:13px;padding:12px;display:flex;gap:12px;align-items:center;margin:9px 0;background:#fff}.thumb{width:70px;height:80px;border-radius:9px;background:#faf3f6;object-fit:cover}.pinfo{flex:1;min-width:0}.muted{font-size:12px;color:#817780;line-height:1.7}.notice{background:#fff7df;border:1px solid #f2dfaa;padding:12px;border-radius:11px;font-size:13px;line-height:1.8}.pill{font-size:12px;background:#f8e8ee;color:#98516d;padding:4px 8px;border-radius:30px;display:inline-block}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.product{align-items:flex-start}.actions button{flex:1}}
+</style></head><body>
+<header><h1>🌷 إدارة شام ستايل</h1><div class="sub">إضافة وتعديل المنتجات بسهولة من الموبايل</div></header>
+<main>
+<div class="notice"><b>مهم حتى تظهر التعديلات للزبائن:</b> هذه اللوحة تحفظ نسخة على هذا المتصفح. بعد أي تعديل اضغطي «تنزيل ملف المنتجات»، ثم ارفعي ملف <b>products.json</b> إلى GitHub مكان الملف القديم واعملي Commit. بدون هذه الخطوة لن يتغيّر المتجر العام. لا يوجد ربط تلقائي أو مزامنة سحابية في هذه النسخة.</div>
+<section class="box" style="margin-top:14px"><h2 id="formTitle">إضافة منتج جديد</h2>
+<input type="hidden" id="editId">
+<div class="grid">
+<div class="full"><label>اسم المنتج</label><input id="name" placeholder="مثلاً: سيت شتوي ترندي"></div>
+<div><label>السعر بالليرة القديمة</label><input id="oldPrice" type="number" min="0" placeholder="250000"></div>
+<div><label>السعر بالليرة الجديدة</label><input id="newPrice" type="number" min="0" placeholder="2500"></div>
+<div class="full"><label>رابط صورة المنتج (اختياري)</label><input id="imageUrl" placeholder="https://..."></div>
+<div class="full"><label>أو اختاري صورة من موبايلك</label><input id="imageFile" type="file" accept="image/*"><div class="muted">سيتم ضغط الصورة قبل حفظها. يفضّل صورة واضحة بحجم معتدل.</div></div>
+<div class="full"><label>الألوان — افصلي بين كل لون والثاني بفاصلة</label><input id="colors" placeholder="أسود، زهري، أبيض"></div>
+<div class="full"><label>المقاسات — افصلي بينها بفاصلة</label><input id="sizes" placeholder="S, M, L, XL, XXL"></div>
+<div class="full"><label>وصف مختصر (اختياري)</label><textarea id="description" rows="2" placeholder="تفاصيل القماش أو الموديل…"></textarea></div>
+</div>
+<div class="actions"><button class="save" onclick="saveProduct()">حفظ المنتج</button><button class="secondary" onclick="resetForm()">إلغاء التعديل / تفريغ</button></div></section>
+<section class="box"><h2>المنتجات الحالية <span class="pill" id="count">0</span></h2><div id="list"></div>
+<div class="actions"><button class="save" onclick="downloadProducts()">تنزيل ملف المنتجات للتحديث على الموقع</button><button class="secondary" onclick="document.getElementById('importFile').click()">استيراد ملف منتجات سابق</button><input id="importFile" type="file" accept="application/json,.json" hidden onchange="importProducts(event)"></div>
+<p class="muted">احتفظي بنسخة من ملف products.json بعد كل تحديث. إذا فتحتي لوحة الإدارة من متصفح أو جهاز آخر، استوردي آخر ملف منتجات أولاً.</p></section>
+</main>
+<script>
+const KEY="shamStyleAdminProductsV1";let items=[];
+function safeParse(s){try{let a=JSON.parse(s);return Array.isArray(a)?a:[]}catch(e){return []}}
+async function init(){let local=localStorage.getItem(KEY);if(local){items=safeParse(local)}else{try{let r=await fetch("./products.json?"+Date.now());items=r.ok?safeParse(await r.text()):[]}catch(e){items=[]}persist()}render()}
+function persist(){localStorage.setItem(KEY,JSON.stringify(items))}
+function split(v){return v.split(/[,،]/).map(x=>x.trim()).filter(Boolean)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function render(){document.getElementById("count").textContent=items.length;document.getElementById("list").innerHTML=items.length?items.map(p=>`<div class="product"><img class="thumb" src="${p.image||""}" onerror="this.style.display='none'"><div class="pinfo"><b>${esc(p.name)}</b><div class="muted">${Number(p.priceNew||0).toLocaleString("en-US")} جديدة · ${Number(p.priceOld||0).toLocaleString("en-US")} قديمة<br>الألوان: ${esc((p.colors||[]).join("، "))} | المقاسات: ${esc((p.sizes||[]).join("، "))}</div></div><div class="actions"><button class="secondary" onclick="editProduct('${p.id}')">تعديل</button><button class="danger" onclick="deleteProduct('${p.id}')">حذف</button></div></div>`).join(""):'<p class="muted">ما أضفتي أي منتج بعد.</p>'}
+async function compressImage(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const max=1000,scale=Math.min(1,max/Math.max(img.width,img.height)),w=Math.round(img.width*scale),h=Math.round(img.height*scale),c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);resolve(c.toDataURL("image/jpeg",.78))};img.onerror=reject;img.src=reader.result};reader.onerror=reject;reader.readAsDataURL(file)})}
+async function saveProduct(){const name=document.getElementById("name").value.trim();if(!name)return alert("اكتبي اسم المنتج.");const id=document.getElementById("editId").value||("p-"+Date.now());let old=items.find(x=>x.id===id),image=document.getElementById("imageUrl").value.trim()||old?.image||"";const file=document.getElementById("imageFile").files[0];if(file){try{image=await compressImage(file)}catch(e){return alert("ما قدرت أقرأ الصورة. جرّبي صورة ثانية.")}}
+const p={id,name,priceOld:Number(document.getElementById("oldPrice").value||0),priceNew:Number(document.getElementById("newPrice").value||0),image,colors:split(document.getElementById("colors").value),sizes:split(document.getElementById("sizes").value),description:document.getElementById("description").value.trim(),active:true};
+if(old)items=items.map(x=>x.id===id?p:x);else items.unshift(p);persist();render();resetForm();alert("انحفظ المنتج على هذا المتصفح. لتنزيله للموقع اضغطي زر تنزيل ملف المنتجات.")}
+function editProduct(id){const p=items.find(x=>x.id===id);if(!p)return;document.getElementById("editId").value=id;document.getElementById("name").value=p.name||"";document.getElementById("oldPrice").value=p.priceOld||0;document.getElementById("newPrice").value=p.priceNew||0;document.getElementById("imageUrl").value=p.image?.startsWith("data:")?"":p.image||"";document.getElementById("colors").value=(p.colors||[]).join("، ");document.getElementById("sizes").value=(p.sizes||[]).join("، ");document.getElementById("description").value=p.description||"";document.getElementById("formTitle").textContent="تعديل المنتج";window.scrollTo({top:0,behavior:"smooth"})}
+function deleteProduct(id){if(!confirm("متأكدة من حذف المنتج؟"))return;items=items.filter(x=>x.id!==id);persist();render()}
+function resetForm(){["editId","name","oldPrice","newPrice","imageUrl","colors","sizes","description","imageFile"].forEach(id=>document.getElementById(id).value="");document.getElementById("formTitle").textContent="إضافة منتج جديد"}
+function downloadProducts(){const blob=new Blob([JSON.stringify(items,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="products.json";a.click();URL.revokeObjectURL(url)}
+function importProducts(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{const parsed=safeParse(r.result);if(!parsed.length&&!confirm("الملف لا يحتوي منتجات أو فارغ. هل تريدين استبدال القائمة؟"))return;items=parsed;persist();render();alert("تم استيراد المنتجات.")};r.readAsText(file);e.target.value=""}
+init();
+</script></body></html>
