@@ -1,0 +1,319 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #fffafb;
+  color: #382b31;
+  font-family: Arial, Tahoma, sans-serif;
+}
+
+.top {
+  background: #f8e5ec;
+  border-bottom: 1px solid #efd0dc;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand b {
+  letter-spacing: 2px;
+  font-size: 18px;
+}
+
+.brand small {
+  display: block;
+  color: #866b78;
+  margin-top: 4px;
+}
+
+.flower {
+  font-size: 34px;
+  color: #c56b91;
+}
+
+nav {
+  display: flex;
+  gap: 7px;
+}
+
+.navbtn,
+.light {
+  border: 1px solid #e6c4d2;
+  background: #fff;
+  color: #694456;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.navbtn.active {
+  background: #9f5575;
+  color: white;
+}
+
+main {
+  max-width: 1100px;
+  margin: 25px auto;
+  padding: 0 16px;
+  min-height: 70vh;
+}
+
+.hero {
+  background: linear-gradient(120deg, #f8e5ec, #fff4f7);
+  padding: 34px 22px;
+  border-radius: 18px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  letter-spacing: 4px;
+  color: #a55f7e;
+}
+
+.hero h1 {
+  margin: 8px 0;
+  font-size: 30px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.toolbar input {
+  flex: 1;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.product,
+.panel,
+.checkout,
+.adminitem {
+  background: white;
+  border: 1px solid #f0dfe6;
+  border-radius: 15px;
+  padding: 14px;
+  box-shadow: 0 5px 18px #6e40500b;
+}
+
+.product img {
+  width: 100%;
+  height: 245px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #f8f0f3;
+}
+
+.product h3 {
+  margin: 10px 0 5px;
+}
+
+.price {
+  color: #a34f75;
+  font-weight: bold;
+}
+
+.product select {
+  width: 100%;
+  margin: 7px 0;
+}
+
+.primary {
+  background: #a65378;
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 17px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.primary:disabled {
+  opacity: .45;
+}
+
+.full {
+  width: 100%;
+  margin-top: 12px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #e6d5dd;
+  border-radius: 9px;
+  background: #fff;
+  font: inherit;
+  color: #382b31;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: #765c68;
+}
+
+label input,
+label select,
+label textarea {
+  display: block;
+  margin-top: 6px;
+}
+
+.formgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+.checkout {
+  margin-top: 22px;
+}
+
+.total {
+  font-size: 18px;
+  margin-top: 16px;
+}
+
+.total strong {
+  color: #a65378;
+}
+
+.cartrow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #f0e3e9;
+}
+
+.cartrow img {
+  width: 75px;
+  height: 85px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.cartrow .grow {
+  flex: 1;
+}
+
+.remove {
+  border: 0;
+  background: #faedf2;
+  color: #9d456c;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.adminhead,
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.panel {
+  margin: 18px 0;
+}
+
+.adminlist {
+  display: grid;
+  gap: 10px;
+}
+
+.adminitem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adminitem img {
+  width: 65px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.adminitem .grow {
+  flex: 1;
+}
+
+.empty {
+  text-align: center;
+  padding: 35px;
+  color: #8c7480;
+}
+
+footer {
+  text-align: center;
+  padding: 22px;
+  color: #987f8b;
+  font-size: 12px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #382b31;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 10px;
+  display: none;
+  max-width: 90%;
+}
+
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: 24px;
+  }
+
+  .formgrid {
+    grid-template-columns: 1fr;
+  }
+
+  .wide {
+    grid-column: auto;
+  }
+
+  .toolbar {
+    flex-direction: column;
+  }
+
+  .top {
+    justify-content: center;
+  }
+
+  nav {
+    width: 100%;
+    justify-content: center;
+  }
+}
