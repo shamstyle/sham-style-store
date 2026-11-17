@@ -1,157 +1,247 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>شام ستايل | SHAM STYLE</title>
-<style>
-:root{--pink:#d95b91;--pink2:#f9e5ef;--ink:#211820;--muted:#51434d;--line:#e7d5df;--white:#fff}
-*{box-sizing:border-box}body{margin:0;background:#fffafd;color:var(--ink);font-family:Tahoma,Arial,sans-serif;font-weight:600;line-height:1.7}
-header{background:linear-gradient(120deg,#fff,#f8e3ed);padding:25px 16px;text-align:center;border-bottom:1px solid var(--line)}
-.logo{font-size:30px;font-weight:900;color:#9f285f}.sub{color:#382631;font-weight:700}
-main{max-width:760px;margin:22px auto;padding:0 14px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 5px 18px #6b294010}
-h1,h2,h3{color:#241720;margin:0 0 10px}h1{font-size:23px}.price{font-size:21px;color:#8d174f;font-weight:900}.oldnew{color:#31232c;font-weight:800}
-label{display:block;margin:12px 0 5px;color:#211820;font-weight:900}select,input,textarea{width:100%;padding:13px;border:1.5px solid #b99aa9;border-radius:11px;background:#fff;color:#211820;font-size:16px;font-weight:700}
-select:focus,input:focus,textarea:focus{outline:2px solid #d95b91;border-color:#a62d66}button{border:0;border-radius:12px;background:var(--pink);color:white;padding:13px 18px;font-size:16px;font-weight:900;cursor:pointer;width:100%;margin-top:12px}
-button.secondary{background:#5b3448}.hint{color:#382b34;font-size:14px;font-weight:700}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cartitem{border-bottom:1px solid var(--line);padding:10px 0;color:#211820}.total{font-size:19px;font-weight:900;color:#8d174f}.hidden{display:none}.tag{display:inline-block;background:#f8e4ee;color:#65213f;padding:4px 10px;border-radius:30px;font-weight:900}
-</style></head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7dce6">
+  <title>شام ستايل | SHAM STYLE</title>
+  <style>
+    :root{--pink:#d86f98;--pink-dark:#a83f6b;--pink-soft:#fff1f6;--ink:#343039;--muted:#77717a;--line:#f0d8e2;--white:#fff}
+    *{box-sizing:border-box}body{margin:0;background:#fffafb;color:var(--ink);font-family:Tahoma,Arial,sans-serif;line-height:1.7}
+    .top{background:linear-gradient(135deg,#fff,#fbe5ed);padding:28px 16px 22px;text-align:center;border-bottom:1px solid var(--line)}
+    .brand{font-size:30px;font-weight:800;color:var(--pink-dark);letter-spacing:.4px}.sub{color:var(--muted);font-size:14px;margin-top:3px}
+    main{max-width:760px;margin:22px auto;padding:0 14px 40px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 5px 18px #a83f6b0b}
+    h1{font-size:22px;margin:0 0 8px;color:var(--pink-dark)}h2{font-size:18px;margin:0 0 12px;color:var(--pink-dark)}p{margin:6px 0}.hint{font-size:13px;color:var(--muted)}
+    .price{font-weight:800;color:var(--pink-dark);font-size:20px;margin:10px 0 2px}.price small{display:block;font-size:14px;color:var(--muted);font-weight:600}
+    label{display:block;font-size:14px;font-weight:700;margin:12px 0 5px}input,select,textarea{width:100%;padding:12px;border:1px solid #e6cbd6;border-radius:11px;background:#fff;color:var(--ink);font:inherit;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--pink);box-shadow:0 0 0 3px #d86f9820}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{width:100%;border:0;border-radius:12px;padding:13px 16px;margin-top:14px;background:var(--pink);color:white;font:700 16px Tahoma,Arial;cursor:pointer}.btn:hover{background:var(--pink-dark)}.btn:disabled{opacity:.6;cursor:wait}
+    .cartitem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}.remove{border:1px solid #e7c6d4;background:#fff7fa;color:var(--pink-dark);border-radius:8px;padding:5px 9px;cursor:pointer}
+    .total{font-weight:800;color:var(--pink-dark);margin-top:12px}.hidden{display:none!important}.notice{margin-top:12px;padding:11px;border-radius:10px;background:var(--pink-soft);color:var(--pink-dark);font-size:14px;white-space:pre-wrap}
+    .foot{text-align:center;color:var(--muted);font-size:12px;padding:12px}.pill{display:inline-block;background:#fff0f5;color:var(--pink-dark);padding:4px 10px;border-radius:30px;font-size:12px;margin-inline-start:5px}
+    @media(max-width:520px){.grid{grid-template-columns:1fr}.brand{font-size:26px}.card{padding:15px}}
+  </style>
+</head>
 <body>
-<header><div class="logo">شام ستايل</div><div class="sub">SHAM STYLE · أناقتك بتفاصيلها 🩷</div></header>
-<main>
-<section class="card">
-<div class="tag">وصل حديثاً</div><h1 style="margin-top:10px">سيت شتوي ترندي</h1>
-<p class="hint">طقم قطعتين من قماش الفرو التركي مع ضمان.</p>
-<div class="price">250,000 ل.س قديمة</div><div class="oldnew">2,500 ليرة سورية جديدة</div>
-<label for="color">اختاري اللون</label><select id="color"><option value="">اختاري اللون</option><option>اللون الأول</option><option>اللون الثاني</option><option>اللون الثالث</option></select>
-<label for="size">اختاري القياس</label><select id="size"><option value="">اختاري القياس</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select>
-<button onclick="addCart()">أضيفي إلى السلة</button><p class="hint">التوصيل خلال 15 يوماً من تثبيت الطلب.</p>
-</section>
-<section class="card"><h2>سلة المشتريات</h2><div id="cart"><p class="hint">السلة فارغة حالياً.</p></div><div class="total" id="total"></div></section>
-<section class="card"><h2>إتمام الطلب</h2>
-<label for="name">الاسم الكامل</label><input id="name" autocomplete="name" placeholder="اكتبي اسمك الكامل">
-<label for="phone">رقم الهاتف</label><input id="phone" inputmode="tel" placeholder="09xxxxxxxx">
-<label for="method">طريقة التوصيل</label><select id="method" onchange="deliveryChanged()"><option value="">اختاري طريقة التوصيل</option><option value="branch">استلام من فرع القدموس</option><option value="courier">توصيل مباشر (دمشق وريف دمشق)</option></select>
-<div id="branchArea" class="hidden"><label for="governorate">المحافظة</label><select id="governorate" onchange="branchesChanged()"><option value="">اختاري المحافظة</option></select><label for="branch">الفرع</label><select id="branch"><option value="">اختاري الفرع</option></select></div>
-<div id="courierArea" class="hidden"><label for="courierGov">المحافظة</label><select id="courierGov"><option value="">اختاري المحافظة</option><option>دمشق</option><option>ريف دمشق</option></select><label for="locality">المنطقة والعنوان بالتفصيل</label><textarea id="locality" rows="3" placeholder="المنطقة، الشارع، أقرب نقطة دالة"></textarea></div>
-<p class="hint">رسوم التوصيل غير مضافة حالياً، وسيتم تأكيدها قبل تثبيت الطلب.</p>
-<button class="secondary" onclick="submitOrder()">تأكيد تفاصيل الطلب</button><p id="notice" class="hint"></p>
-</section>
-</main>
-  
-const SUPABASE_FUNCTION_URL =
-  "https://nuyszbvrhrbqnlnxaibu.supabase.co/functions/v1/bright-responder";
+  <header class="top">
+    <div class="brand">شام ستايل</div>
+    <div class="sub">SHAM STYLE · اختاري قطعتك المفضلة بكل سهولة 🩷</div>
+  </header>
 
-// ضعي هنا Publishable key من Supabase، وليس Secret key
-sb_publishable_3sKphiDl7P3Jpt390ZLvrQ_juzyWXcL
+  <main>
+    <section class="card">
+      <span class="pill">وصل حديثاً</span>
+      <h1>سيت شتوي ترندي</h1>
+      <p>سيت قطعتين من قماش تركي فليس مع ضمان.</p>
+      <div class="price">250,000 ل.س قديمة <small>2,500 ليرة سورية جديدة</small></div>
+      <p class="hint">التوصيل خلال 15 يوماً من تثبيت الطلب. اختاري اللون والقياس قبل الإضافة إلى السلة.</p>
+      <div class="grid">
+        <div>
+          <label for="color">اللون</label>
+          <select id="color">
+            <option value="">اختاري اللون</option>
+            <option value="اللون الأول">اللون الأول</option>
+            <option value="اللون الثاني">اللون الثاني</option>
+            <option value="اللون الثالث">اللون الثالث</option>
+          </select>
+        </div>
+        <div>
+          <label for="size">القياس</label>
+          <select id="size">
+            <option value="">اختاري القياس</option>
+            <option value="S">S</option><option value="M">M</option><option value="L">L</option><option value="XL">XL</option><option value="XXL">XXL</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" type="button" onclick="addCart()">أضيفي إلى السلة 🩷</button>
+    </section>
 
-// سنضع معرّف المنتج الحقيقي بعد إضافته إلى قاعدة البيانات
-const SHAM_PRODUCT_ID = "d66cc497-4c6d-4008-a5f7-0b02056e3eb5";
+    <section class="card">
+      <h2>سلة مشترياتك</h2>
+      <div id="cart"><p class="hint">السلة فارغة حالياً.</p></div>
+      <div id="total" class="total"></div>
+    </section>
 
-window.submitOrder = async function () {
-  const n = document.getElementById("name").value.trim();
-  const p = document.getElementById("phone").value.trim();
-  const m = document.getElementById("method").value;
+    <section class="card">
+      <h2>بيانات التوصيل</h2>
+      <label for="name">الاسم الكامل</label>
+      <input id="name" autocomplete="name" placeholder="اكتبي اسمك الكامل">
+      <label for="phone">رقم الهاتف</label>
+      <input id="phone" type="tel" autocomplete="tel" placeholder="09xxxxxxxx">
 
-  if (!cart.length) {
-    alert("أضيفي منتجاً إلى السلة أولاً");
-    return;
-  }
+      <label for="method">طريقة التوصيل</label>
+      <select id="method" onchange="deliveryChanged()">
+        <option value="">اختاري طريقة التوصيل</option>
+        <option value="branch">الشحن عبر فرع القدموس</option>
+        <option value="courier">توصيل مباشر - دمشق وريف دمشق</option>
+      </select>
 
-  if (!n || !p || !m) {
-    alert("كمّلي الاسم ورقم الهاتف وطريقة التوصيل");
-    return;
-  }
+      <div id="branchArea" class="hidden">
+        <label for="governorate">المحافظة / مجموعة الفروع</label>
+        <select id="governorate" onchange="branchesChanged()"><option value="">اختاري المحافظة</option></select>
+        <label for="branch">فرع القدموس</label>
+        <select id="branch"><option value="">اختاري الفرع</option></select>
+      </div>
 
-  let governorate = "";
-  let deliveryLocation = "";
-  let address = "";
+      <div id="courierArea" class="hidden">
+        <label for="courierGov">المحافظة</label>
+        <select id="courierGov">
+          <option value="">اختاري المحافظة</option>
+          <option value="دمشق">دمشق</option>
+          <option value="ريف دمشق">ريف دمشق</option>
+        </select>
+        <label for="locality">المنطقة والعنوان بالتفصيل</label>
+        <textarea id="locality" rows="3" placeholder="المنطقة، الشارع، أقرب نقطة دالة..."></textarea>
+      </div>
+      <p class="hint">رسوم التوصيل غير مضافة حالياً إلى الإجمالي، وسيتم تأكيدها معك قبل تثبيت الطلب.</p>
+      <button class="btn" id="submitButton" type="button" onclick="submitOrder()">إرسال الطلب</button>
+      <div id="notice" class="notice hidden" role="status"></div>
+    </section>
+    <div class="foot">شام ستايل · شكراً لثقتك فينا 🩷</div>
+  </main>
 
-  if (m === "branch") {
-    governorate = document.getElementById("governorate").value;
-    deliveryLocation = document.getElementById("branch").value;
-    address = deliveryLocation;
+  <script>
+    // إعدادات الربط العامة مع Supabase
+    const SUPABASE_FUNCTION_URL = "https://nuyszbvrhrbqnlnxaibu.supabase.co/functions/v1/bright-responder";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_3sKphiDl7P3Jpt390ZLvrQ_juzyWXcL";
+    const SHAM_PRODUCT_ID = "d66cc497-4c6d-4008-a5f7-0b02056e3eb5";
 
-    if (!governorate || !deliveryLocation) {
-      alert("اختاري المحافظة والفرع");
-      return;
-    }
-  } else if (m === "courier") {
-    governorate = document.getElementById("courierGov").value;
-    deliveryLocation = document.getElementById("locality").value.trim();
-    address = deliveryLocation;
+    const PRODUCT_OLD_PRICE = 250000;
+    const PRODUCT_NEW_PRICE = 2500;
+    const cart = [];
 
-    if (!governorate || !address) {
-      alert("كمّلي المحافظة والعنوان");
-      return;
-    }
-  } else {
-    alert("اختاري طريقة توصيل صحيحة");
-    return;
-  }
+    const branchMap = {
+      "فروع اللاذقية": ["8 آذار", "الجامعة (سبيرو)", "الزراعة", "سوق التجار", "الرمل الشمالي", "بوقا"],
+      "فروع جبلة": ["جبلة", "جبلة رأس العين", "القرداحة"],
+      "فروع حمص": ["الزهرا", "الحمرا", "الحضارة", "جورة الشياح", "شين", "الحواش (وادي النصارى)"],
+      "فروع حماه": ["الكراج", "العاصي", "سلحب", "سقيلبية", "سلمية", "مصياف", "محردة"],
+      "فروع حلب": ["الفرقان", "الجميلية"],
+      "فروع طرطوس": ["طرطوس", "المنطار", "المحطة", "الكراج القديم", "الشيخ سعد", "الشيخ بدر", "دريكيش", "صافيتا", "بانياس", "مدينة القدموس"],
+      "فروع درعا": ["درعا (القصور)", "الصنمين", "القطيفة", "يبرود", "قطنا", "دير عطية", "النبك"],
+      "أفرع محافظة دمشق": ["الحمرا", "ضاحية الأسد", "البرامكة", "الحريقة", "جرمانا", "جديدة عرطوز", "صحنايا"]
+    };
 
-  if (
-    SUPABASE_PUBLISHABLE_KEY.includes("ضعي_") ||
-    SHAM_PRODUCT_ID.includes("نضع_")
-  ) {
-    alert("لسا ناقص إعداد مفتاح الربط ومعرّف المنتج");
-    return;
-  }
-
-  const payload = {
-    customer_name: n,
-    phone: p,
-    governorate,
-    address,
-    delivery_method: m,
-    delivery_location: deliveryLocation,
-    items: cart.map(item => ({
-      product_id: SHAM_PRODUCT_ID,
-      color_name: item.color,
-      size: item.size,
-      quantity: 1
-    }))
-  };
-
-  try {
-    const response = await fetch(SUPABASE_FUNCTION_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_PUBLISHABLE_KEY,
-        "Authorization": "Bearer " + SUPABASE_PUBLISHABLE_KEY
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(result.error || "تعذر إرسال الطلب");
+    function addCart() {
+      const color = document.getElementById("color").value;
+      const size = document.getElementById("size").value;
+      if (!color || !size) { alert("اختاري اللون والقياس أولاً"); return; }
+      cart.push({ color, size });
+      renderCart();
+      alert("تمت إضافة القطعة إلى السلة 🩷");
     }
 
-    document.getElementById("notice").textContent =
-      "تم استلام طلبك بنجاح 🩷 رقم الطلب: " + result.order_id;
+    function renderCart() {
+      const el = document.getElementById("cart");
+      const total = document.getElementById("total");
+      if (!cart.length) {
+        el.innerHTML = '<p class="hint">السلة فارغة حالياً.</p>';
+        total.textContent = "";
+        return;
+      }
+      el.innerHTML = cart.map((item, index) =>
+        `<div class="cartitem"><span>قطعة ${index + 1}: ${item.color} — قياس ${item.size}</span><button class="remove" type="button" onclick="removeItem(${index})">حذف</button></div>`
+      ).join("");
+      total.innerHTML = `عدد القطع: ${cart.length}<br>الإجمالي: ${(PRODUCT_OLD_PRICE * cart.length).toLocaleString("en-US")} ل.س قديمة<br>${(PRODUCT_NEW_PRICE * cart.length).toLocaleString("en-US")} ليرة سورية جديدة`;
+    }
 
-    alert("وصل طلبك بنجاح إلى شام ستايل 🩷");
-  } catch (error) {
-    alert(error.message || "حدث خطأ، حاولي مرة أخرى");
-  }
-};
-  
-<script>
-const branchMap={
-'اللاذقية':['8 آذار','الجامعة (سبيرو)','الزراعة','سوق التجار','الرمل الشمالي','بوقا'],
-'جبلة':['جبلة','جبلة رأس العين','القرداحة'],
-'حمص':['الزهرا','الحمرا','الحضارة','جورة الشياح','شين','الحواش (وادي النصارى)'],
-'حماه':['الكراج','العاصي','سلحب','سقيلبية','سلمية','مصياف','محردة'],
-'حلب':['الفرقان','الجميلية'],
-'طرطوس':['طرطوس','المنطار','المحطة','الكراج القديم','الشيخ سعد','الشيخ بدر','دريكيش','صافيتا','بانياس','مدينة القدموس'],
-'درعا':['درعا (القصور)','الصنمين','القطيفة','يبرود','قطنا','دير عطية','النبك'],
-'دمشق':['الحمرا','ضاحية الأسد','البرامكة','الحريقة','جرمانا','جديدة عرطوز','صحنايا']};
-let cart=[];
-function addCart(){let c=document.getElementById('color').value,s=document.getElementById('size').value;if(!c||!s){alert('اختاري اللون والقياس أولاً');return}cart.push({color:c,size:s});renderCart();alert('تمت إضافة القطعة إلى السلة 🩷')}
-function renderCart(){let el=document.getElementById('cart');if(!cart.length){el.innerHTML='<p class="hint">السلة فارغة حالياً.</p>';document.getElementById('total').textContent='';return}el.innerHTML=cart.map((x,i)=>`<div class="cartitem">قطعة ${i+1}: ${x.color} — قياس ${x.size} <button style="width:auto;padding:5px 10px;margin:4px" onclick="removeItem(${i})">حذف</button></div>`).join('');document.getElementById('total').innerHTML='الإجمالي: 250,000 ل.س قديمة<br>2,500 ليرة سورية جديدة';}
-function removeItem(i){cart.splice(i,1);renderCart()}
-function deliveryChanged(){let m=document.getElementById('method').value;document.getElementById('branchArea').classList.toggle('hidden',m!=='branch');document.getElementById('courierArea').classList.toggle('hidden',m!=='courier');if(m==='branch'){let g=document.getElementById('governorate');g.innerHTML='<option value="">اختاري المحافظة</option>'+Object.keys(branchMap).map(x=>`<option>${x}</option>`).join('');document.getElementById('branch').innerHTML='<option value="">اختاري الفرع</option>'}}
-function branchesChanged(){let gov=document.getElementById('governorate').value,b=document.getElementById('branch');b.innerHTML='<option value="">اختاري الفرع</option>'+(branchMap[gov]||[]).map(x=>`<option>${x}</option>`).join('')}
-function submitOrder(){let n=document.getElementById('name').value.trim(),p=document.getElementById('phone').value.trim(),m=document.getElementById('method').value;if(!cart.length){alert('أضيفي منتجاً إلى السلة أولاً');return}if(!n||!p||!m){alert('كمّلي الاسم ورقم الهاتف وطريقة التوصيل');return}if(m==='branch'&&(!document.getElementById('governorate').value||!document.getElementById('branch').value)){alert('اختاري المحافظة والفرع');return}if(m==='courier'&&(!document.getElementById('courierGov').value||!document.getElementById('locality').value.trim())){alert('كمّلي المحافظة والعنوان');return}document.getElementById('notice').textContent='تم التحقق من البيانات على هذه الصفحة فقط. استقبال الطلبات الإلكتروني غير مفعّل بعد، فلا تعتبري الطلب مرسلاً.';}
-</script></body></html>
+    function removeItem(index) { cart.splice(index, 1); renderCart(); }
+
+    function deliveryChanged() {
+      const method = document.getElementById("method").value;
+      document.getElementById("branchArea").classList.toggle("hidden", method !== "branch");
+      document.getElementById("courierArea").classList.toggle("hidden", method !== "courier");
+      if (method === "branch") {
+        const governorate = document.getElementById("governorate");
+        governorate.innerHTML = '<option value="">اختاري المحافظة</option>' +
+          Object.keys(branchMap).map(name => `<option value="${name}">${name}</option>`).join("");
+        document.getElementById("branch").innerHTML = '<option value="">اختاري الفرع</option>';
+      }
+    }
+
+    function branchesChanged() {
+      const governorate = document.getElementById("governorate").value;
+      const branch = document.getElementById("branch");
+      branch.innerHTML = '<option value="">اختاري الفرع</option>' +
+        (branchMap[governorate] || []).map(name => `<option value="${name}">${name}</option>`).join("");
+    }
+
+    async function submitOrder() {
+      const button = document.getElementById("submitButton");
+      const notice = document.getElementById("notice");
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const method = document.getElementById("method").value;
+
+      notice.classList.add("hidden");
+      if (!cart.length) { alert("أضيفي منتجاً إلى السلة أولاً"); return; }
+      if (!name || !phone || !method) { alert("كمّلي الاسم ورقم الهاتف وطريقة التوصيل"); return; }
+
+      let governorate = "";
+      let deliveryLocation = "";
+      let address = "";
+
+      if (method === "branch") {
+        governorate = document.getElementById("governorate").value;
+        deliveryLocation = document.getElementById("branch").value;
+        address = deliveryLocation;
+        if (!governorate || !deliveryLocation) { alert("اختاري مجموعة الفروع والفرع"); return; }
+      } else if (method === "courier") {
+        governorate = document.getElementById("courierGov").value;
+        deliveryLocation = document.getElementById("locality").value.trim();
+        address = deliveryLocation;
+        if (!governorate || !address) { alert("كمّلي المحافظة والعنوان بالتفصيل"); return; }
+      } else {
+        alert("اختاري طريقة توصيل صحيحة"); return;
+      }
+
+      const payload = {
+        customer_name: name,
+        phone,
+        governorate,
+        address,
+        delivery_method: method,
+        delivery_location: deliveryLocation,
+        items: cart.map(item => ({
+          product_id: SHAM_PRODUCT_ID,
+          color_name: item.color,
+          size: item.size,
+          quantity: 1
+        }))
+      };
+
+      button.disabled = true;
+      button.textContent = "جارٍ إرسال الطلب...";
+      try {
+        const response = await fetch(SUPABASE_FUNCTION_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_PUBLISHABLE_KEY,
+            "Authorization": "Bearer " + SUPABASE_PUBLISHABLE_KEY
+          },
+          body: JSON.stringify(payload)
+        });
+
+        let result;
+        try { result = await response.json(); }
+        catch (_) { throw new Error("وصل رد غير مفهوم من الخادم. حاولي لاحقاً."); }
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || `تعذر إرسال الطلب (رمز ${response.status})`);
+        }
+
+        notice.textContent = `تم استلام طلبك بنجاح 🩷\nرقم الطلب: ${result.order_id}\nالإجمالي: ${(PRODUCT_OLD_PRICE * cart.length).toLocaleString("en-US")} ل.س قديمة / ${(PRODUCT_NEW_PRICE * cart.length).toLocaleString("en-US")} ليرة جديدة.\nسيتم التواصل معك لتأكيد رسوم التوصيل والطلب.`;
+        notice.classList.remove("hidden");
+        cart.length = 0;
+        renderCart();
+        document.getElementById("name").value = "";
+        document.getElementById("phone").value = "";
+      } catch (error) {
+        alert(error.message || "حدث خطأ أثناء إرسال الطلب. حاولي مرة أخرى.");
+      } finally {
+        button.disabled = false;
+        button.textContent = "إرسال الطلب";
+      }
+    }
+  </script>
+</body>
+</html>
