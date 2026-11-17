@@ -190,63 +190,6 @@ function submitOrder() {
     return;
   }
 
-  if (!name || !phone || !method) {
-    alert("كمّلي الاسم ورقم الهاتف وطريقة التوصيل");
-    return;
-  }
-
-  let governorate = "";
-  let delivery = "";
-
-  if (method === "branch") {
-    governorate = document.getElementById("governorate").value;
-    delivery = document.getElementById("branch").value;
-
-    if (!governorate || !delivery) {
-      alert("اختاري المحافظة والفرع");
-      return;
-    }
-  } else if (method === "courier") {
-    governorate = document.getElementById("courierGov").value;
-    delivery = document.getElementById("locality").value.trim();
-
-    if (!governorate || !delivery) {
-      alert("كمّلي المحافظة والعنوان");
-      return;
-    }
-  }
-
-  const total = 2500 * cart.length;
-
-  let message =
-    "🩷 طلب جديد - شام ستايل 🩷\n\n" +
-    "👤 الاسم: " + name + "\n" +
-    "📞 هاتف الزبونة: " + phone + "\n" +
-    "📍 المحافظة: " + governorate + "\n" +
-    "🚚 طريقة التوصيل: " +
-    (method === "branch" ? "فرع القدموس" : "توصيل مباشر") +
-    "\n" +
-    "📌 الفرع / العنوان: " + delivery + "\n\n" +
-    "🛍️ تفاصيل الطلب:\n";
-
-  cart.forEach((item, index) => {
-    message +=
-      (index + 1) + "- سيت شتوي ترندي\n" +
-      "اللون: " + item.color + "\n" +
-      "المقاس: " + item.size + "\n\n";
-  });
-
-  message +=
-    "💰 الإجمالي: " + total.toLocaleString("en-US") +
-    " ليرة سورية جديدة\n\n" +
-    "بانتظار تأكيد الطلب 🩷";
-
-  const whatsappURL =
-    "https://wa.me/963997050453?text=" +
-    encodeURIComponent(message);
-
-  window.open(whatsappURL, "_blank");
-}
     
 
       notice.classList.add("hidden");
