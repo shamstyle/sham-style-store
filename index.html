@@ -110,14 +110,14 @@
     const cart = [];
 
     const branchMap = {
-      "فروع اللاذقية": ["8 آذار", "الجامعة (سبيرو)", "الزراعة", "سوق التجار", "الرمل الشمالي", "بوقا"],
-      "فروع جبلة": ["جبلة", "جبلة رأس العين", "القرداحة"],
-      "فروع حمص": ["الزهرا", "الحمرا", "الحضارة", "جورة الشياح", "شين", "الحواش (وادي النصارى)"],
-      "فروع حماه": ["الكراج", "العاصي", "سلحب", "سقيلبية", "سلمية", "مصياف", "محردة"],
-      "فروع حلب": ["الفرقان", "الجميلية"],
-      "فروع طرطوس": ["طرطوس", "المنطار", "المحطة", "الكراج القديم", "الشيخ سعد", "الشيخ بدر", "دريكيش", "صافيتا", "بانياس", "مدينة القدموس"],
-      "فروع درعا": ["درعا (القصور)", "الصنمين", "القطيفة", "يبرود", "قطنا", "دير عطية", "النبك"],
-      "أفرع محافظة دمشق": ["الحمرا", "ضاحية الأسد", "البرامكة", "الحريقة", "جرمانا", "جديدة عرطوز", "صحنايا"]
+      "اللاذقية": ["8 آذار", "الجامعة (سبيرو)", "الزراعة", "سوق التجار", "الرمل الشمالي", "بوقا"],
+      "جبلة": ["جبلة", "جبلة رأس العين", "القرداحة"],
+      "حمص": ["الزهرا", "الحمرا", "الحضارة", "جورة الشياح", "شين", "الحواش (وادي النصارى)"],
+      "حماة": ["الكراج", "العاصي", "سلحب", "سقيلبية", "سلمية", "مصياف", "محردة"],
+      "حلب": ["الفرقان", "الجميلية"],
+      "طرطوس": ["طرطوس", "المنطار", "المحطة", "الكراج القديم", "الشيخ سعد", "الشيخ بدر", "دريكيش", "صافيتا", "بانياس", "مدينة القدموس"],
+      "درعا": ["درعا (القصور)", "الصنمين", "القطيفة", "يبرود", "قطنا", "دير عطية", "النبك"],
+      "دمشق": ["الحمرا", "ضاحية الأسد", "البرامكة", "الحريقة", "جرمانا", "جديدة عرطوز", "صحنايا"]
     };
 
     function addCart() {
@@ -147,135 +147,39 @@
 
     function deliveryChanged() {
       const method = document.getElementById("method").value;
-      document.getElementById("branchArea").classList.toggle("hidden", method !== "branch");
-      document.getElementById("courierArea").classList.toggle("hidden", method !== "courier");
+      const branchArea = document.getElementById("branchArea");
+      const courierArea = document.getElementById("courierArea");
+      const governorate = document.getElementById("governorate");
+      const branch = document.getElementById("branch");
+
+      branchArea.classList.toggle("hidden", method !== "branch");
+      courierArea.classList.toggle("hidden", method !== "courier");
+
+      // إعادة تعبئة المحافظات عند اختيار الشحن عبر القدموس
       if (method === "branch") {
-        const governorate = document.getElementById("governorate");
-        governorate.innerHTML = '<option value="">اختاري المحافظة</option>' +
-          Object.keys(branchMap).map(name => `<option value="${name}">${name}</option>`).join("");
-        document.getElementById("branch").innerHTML = '<option value="">اختاري الفرع</option>';
+        governorate.innerHTML =
+          '<option value="">اختاري المحافظة</option>' +
+          Object.keys(branchMap).map(name =>
+            `<option value="${name}">${name}</option>`
+          ).join("");
+        branch.innerHTML = '<option value="">اختاري الفرع</option>';
+      } else {
+        governorate.value = "";
+        branch.innerHTML = '<option value="">اختاري الفرع</option>';
       }
     }
 
     function branchesChanged() {
       const governorate = document.getElementById("governorate").value;
       const branch = document.getElementById("branch");
-      branch.innerHTML = '<option value="">اختاري الفرع</option>' +
-        (branchMap[governorate] || []).map(name => `<option value="${name}">${name}</option>`).join("");
+      const names = branchMap[governorate] || [];
+
+      branch.innerHTML =
+        '<option value="">اختاري فرع القدموس</option>' +
+        names.map(name => `<option value="${name}">${name}</option>`).join("");
     }
 
-    
-async function submitOrder() {
-  const button = document.getElementById("submitButton");
-  const notice = document.getElementById("notice");
-
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const method = document.getElementById("method").value;
-
-  notice.classList.add("hidden");
-
-  if (!cart.length) {
-    alert("أضيفي منتجاً إلى السلة أولاً");
-    return;
-  }
-
-  if (!name || !phone || !method) {
-    alert("كمّلي الاسم ورقم الهاتف وطريقة التوصيل");
-    return;
-  }
-
-  let governorate = "";
-  let deliveryLocation = "";
-  let address = "";
-
-  if (method === "branch") {
-    governorate = document.getElementById("governorate").value;
-    deliveryLocation = document.getElementById("branch").value;
-    address = deliveryLocation;
-
-    if (!governorate || !deliveryLocation) {
-      alert("اختاري المحافظة والفرع");
-      return;
-    }
-  } else if (method === "courier") {
-    governorate = document.getElementById("courierGov").value;
-    deliveryLocation = document.getElementById("locality").value.trim();
-    address = deliveryLocation;
-
-    if (!governorate || !address) {
-      alert("كمّلي المحافظة والعنوان بالتفصيل");
-      return;
-    }
-  } else {
-    alert("اختاري طريقة توصيل صحيحة");
-    return;
-  }
-
-  const total = PRODUCT_NEW_PRICE * cart.length;
-
-  const payload = {
-    customer_name: name,
-    phone: phone,
-    city: governorate,
-    address: address,
-    branch: method === "branch" ? deliveryLocation : null,
-    items: cart.map(item => ({
-      product_id: SHAM_PRODUCT_ID,
-      color_name: item.color,
-      size: item.size,
-      quantity: 1
-    })),
-    total_price: total,
-    notes: method === "courier"
-      ? "توصيل مباشر - دمشق وريف دمشق"
-      : "الشحن عبر فرع القدموس"
-  };
-
-  button.disabled = true;
-  button.textContent = "جارٍ إرسال الطلب...";
-
-  try {
-    const response = await fetch(SUPABASE_FUNCTION_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_PUBLISHABLE_KEY,
-        "Authorization": "Bearer " + SUPABASE_PUBLISHABLE_KEY
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(
-        result.error || "تعذر إرسال الطلب، حاولي مرة أخرى"
-      );
-    }
-
-    notice.textContent =
-      `تم استلام طلبك بنجاح 🩷\n` +
-      `رقم الطلب: ${result.order_id}\n` +
-      `الإجمالي: ${total.toLocaleString("en-US")} ليرة سورية جديدة\n` +
-      `سيتم التواصل معك لتأكيد رسوم التوصيل.`;
-
-    notice.classList.remove("hidden");
-
-    cart.length = 0;
-    renderCart();
-
-    document.getElementById("name").value = "";
-    document.getElementById("phone").value = "";
-
-  } catch (error) {
-    alert(error.message || "حدث خطأ أثناء إرسال الطلب");
-  } finally {
-    button.disabled = false;
-    button.textContent = "إرسال الطلب";
-  }
-}
-    
+    async function submitOrder() {
       const button = document.getElementById("submitButton");
       const notice = document.getElementById("notice");
       const name = document.getElementById("name").value.trim();
@@ -307,16 +211,19 @@ async function submitOrder() {
       const payload = {
         customer_name: name,
         phone,
-        governorate,
+        city: governorate,
         address,
-        delivery_method: method,
-        delivery_location: deliveryLocation,
+        branch: method === "branch" ? deliveryLocation : null,
         items: cart.map(item => ({
           product_id: SHAM_PRODUCT_ID,
           color_name: item.color,
           size: item.size,
           quantity: 1
-        }))
+        })),
+        total_price: PRODUCT_NEW_PRICE * cart.length,
+        notes: method === "courier"
+          ? "توصيل مباشر - دمشق وريف دمشق"
+          : "الشحن عبر فرع القدموس"
       };
 
       button.disabled = true;
