@@ -1,0 +1,174 @@
+
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7dce7">
+  <title>Sham Style | شام ستايل</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <span class="flower">✿</span>
+    <div>
+      <b>SHAM STYLE</b>
+      <small>أناقتك تبدأ من هنا</small>
+    </div>
+  </div>
+  <nav>
+    <button class="navbtn active" data-view="shop">المتجر</button>
+    <button class="navbtn" data-view="cart">السلة <span id="cartCount">0</span></button>
+    <button class="navbtn" data-view="admin">الإدارة</button>
+  </nav>
+</header>
+
+<main>
+  <section id="shopView" class="view">
+    <div class="hero">
+      <p>SHAM STYLE</p>
+      <h1>تسوّقي أحدث الموديلات</h1>
+      <span>اختاري القطعة والقياس واللون، وأرسلي طلبك مباشرة عبر واتساب</span>
+    </div>
+
+    <div class="toolbar">
+      <input id="search" placeholder="ابحثي عن منتج...">
+      <select id="categoryFilter">
+        <option value="">كل المنتجات</option>
+      </select>
+    </div>
+
+    <div id="products" class="products"></div>
+    <p id="emptyShop" class="empty" hidden>
+      لا توجد منتجات حالياً. أضيفي منتجاتك من لوحة الإدارة.
+    </p>
+  </section>
+
+  <section id="cartView" class="view" hidden>
+    <h1>سلة التسوق</h1>
+    <div id="cartItems"></div>
+
+    <div class="checkout">
+      <h2>بيانات التوصيل</h2>
+
+      <div class="formgrid">
+        <label>الاسم الكامل
+          <input id="customerName" placeholder="الاسم">
+        </label>
+
+        <label>رقم الهاتف
+          <input id="customerPhone" inputmode="tel" placeholder="09xxxxxxxx">
+        </label>
+
+        <label>المحافظة
+          <select id="governorate">
+            <option value="">اختاري المحافظة</option>
+          </select>
+        </label>
+
+        <label>طريقة التوصيل
+          <select id="delivery">
+            <option value="">اختاري طريقة التوصيل</option>
+            <option>قدَموس</option>
+            <option>مسارات</option>
+            <option>الهرم</option>
+          </select>
+        </label>
+
+        <label class="wide">الفرع / المنطقة / العنوان
+          <input id="branchAddress" placeholder="اسم الفرع أو المنطقة والعنوان بالتفصيل">
+        </label>
+
+        <label class="wide">ملاحظات إضافية
+          <textarea id="notes" rows="2"></textarea>
+        </label>
+      </div>
+
+      <div class="total">
+        المجموع: <strong id="cartTotal">0</strong> ل.س
+      </div>
+
+      <button id="sendOrder" class="primary full">
+        إرسال الطلب عبر واتساب
+      </button>
+
+      <small class="hint">
+        ستظهر تفاصيل المنتجات والقياسات والألوان وروابط الصور ضمن رسالة الطلب.
+      </small>
+    </div>
+  </section>
+
+  <section id="adminView" class="view" hidden>
+    <div class="adminhead">
+      <div>
+        <h1>لوحة إدارة شام ستايل</h1>
+        <p>إضافة المنتجات وتعديلها وإدارة الخيارات.</p>
+      </div>
+      <button id="logoutAdmin" class="light">إغلاق الإدارة</button>
+    </div>
+
+    <form id="productForm" class="panel">
+      <h2 id="formTitle">إضافة منتج جديد</h2>
+      <input type="hidden" id="editId">
+
+      <div class="formgrid">
+        <label>اسم المنتج
+          <input id="pName" required placeholder="اسم المنتج">
+        </label>
+
+        <label>السعر (ل.س)
+          <input id="pPrice" type="number" min="0" required>
+        </label>
+
+        <label>التصنيف
+          <input id="pCategory" placeholder="ملابس / بيجامات">
+        </label>
+
+        <label>رابط صورة المنتج
+          <input id="pImage" type="url" placeholder="https://...">
+        </label>
+
+        <label class="wide">أو اختاري صورة من جهازك
+          <input id="pFile" type="file" accept="image/*">
+        </label>
+
+        <label class="wide">القياسات — كل قياس بسطر منفصل
+          <textarea id="pSizes" rows="3" placeholder="S&#10;M&#10;L&#10;XL&#10;XXL"></textarea>
+        </label>
+
+        <label class="wide">الألوان — كل لون بسطر منفصل
+          <textarea id="pColors" rows="3" placeholder="أسود&#10;زيتي&#10;خمري"></textarea>
+        </label>
+
+        <label class="wide">وصف المنتج
+          <textarea id="pDescription" rows="2"></textarea>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="primary" type="submit">حفظ المنتج</button>
+        <button class="light" type="button" id="cancelEdit">إلغاء</button>
+      </div>
+
+      <p class="hint">
+        يفضّل استخدام رابط صورة عام حتى تظهر الصورة للزبائن في واتساب.
+      </p>
+    </form>
+
+    <h2>المنتجات الحالية</h2>
+    <div id="adminProducts" class="adminlist"></div>
+  </section>
+</main>
+
+<footer>© Sham Style — جميع الحقوق محفوظة</footer>
+
+<div id="toast" class="toast" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+
+</body>
+        </html>
+        
