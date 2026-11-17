@@ -1,1 +1,92 @@
-
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>شام ستايل | SHAM STYLE</title>
+<meta name="description" content="متجر شام ستايل للأزياء النسائية">
+<style>
+:root{--pink:#d982a6;--pink2:#f8e8ef;--dark:#40343b;--muted:#827780;--line:#f0dce5;--bg:#fffafd}
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--dark)}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top{max-width:1050px;margin:auto;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px}.mark{width:42px;height:42px;border-radius:50%;background:var(--pink2);display:grid;place-items:center;color:#b85c83;font-size:22px}
+.brand b{display:block;font-size:18px;letter-spacing:.4px}.brand small{color:var(--muted);font-size:10px;letter-spacing:2px}
+.cart{border:1px solid var(--line);background:#fff;border-radius:24px;padding:9px 14px;color:var(--dark);font-weight:bold}
+.hero{max-width:1050px;margin:24px auto 18px;padding:0 18px}.heroBox{background:linear-gradient(120deg,#f8e8ef,#fff 75%);border:1px solid var(--line);border-radius:22px;padding:27px 22px;text-align:center}
+.hero h1{margin:0 0 8px;font-size:25px;color:#9d5273}.hero p{margin:0;color:var(--muted);line-height:1.8;font-size:14px}
+.wrap{max-width:1050px;margin:22px auto;padding:0 18px}.sectionTitle{font-size:19px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:16px}
+.card{background:white;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.photo{height:220px;background:linear-gradient(145deg,#f9edf2,#eee9ed);display:grid;place-items:center;color:#b47b93;font-size:48px}
+.photo span{font-size:14px;display:block;margin-top:6px}
+.content{padding:16px}.content h3{margin:0 0 8px;font-size:18px}.desc{font-size:13px;color:var(--muted);line-height:1.7;margin:0 0 12px}
+.price{font-weight:bold;color:#a94f77;font-size:18px}.price small{display:block;font-size:12px;color:var(--muted);font-weight:normal;margin-top:3px}
+label{display:block;font-size:13px;margin:12px 0 6px;color:#62545d}
+select,input,textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--dark);font:inherit}
+button{font:inherit;cursor:pointer}.add{width:100%;margin-top:14px;border:0;background:var(--pink);color:white;padding:12px;border-radius:12px;font-weight:bold}
+.add:disabled{opacity:.5;cursor:not-allowed}
+.note{font-size:12px;color:var(--muted);line-height:1.8}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;margin-top:18px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #f6edf1;font-size:14px}
+.remove{border:0;background:#fbeef3;color:#a94f77;border-radius:8px;padding:5px 9px}
+.total{font-weight:bold;color:#9d5273;font-size:18px;padding-top:13px}
+.checkout{display:grid;grid-template-columns:1fr 1fr;gap:10px}.checkout .full{grid-column:1/-1}
+.submit{width:100%;border:0;background:#6c5261;color:white;padding:13px;border-radius:12px;margin-top:12px;font-weight:bold}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:30px 15px}
+@media(max-width:560px){.checkout{grid-template-columns:1fr}.checkout .full{grid-column:auto}.hero h1{font-size:21px}}
+</style>
+</head>
+<body>
+<header><div class="top">
+ <div class="brand"><div class="mark">✿</div><div><b>شام ستايل</b><small>SHAM STYLE</small></div></div>
+ <button class="cart" onclick="document.getElementById('basket').scrollIntoView({behavior:'smooth'})">السلة 🛍️ <span id="count">0</span></button>
+</div></header>
+<section class="hero"><div class="heroBox"><h1>أناقتك بتبدأ من هون 🌷</h1><p>اختاري القطعة واللون والمقاس، وضيفي طلبك للسلة بكل سهولة.<br>أهلاً وسهلاً فيكي بشام ستايل</p></div></section>
+<main class="wrap">
+ <h2 class="sectionTitle">منتجاتنا</h2>
+ <div class="grid" id="products">
+  <article class="card">
+   <div class="photo">🌸<span>صورة المنتج ستُضاف لاحقاً</span></div>
+   <div class="content">
+    <h3>سيت شتوي ترندي</h3>
+    <p class="desc">سيت قطعتين من الفليس التركي مع ضمانة. التوصيل خلال 15 يوم من تثبيت الطلب.</p>
+    <div class="price">250,000 ل.س قديمة <small>2,500 ليرة سورية جديدة</small></div>
+    <label for="color">اختاري اللون</label><select id="color"><option value="">اختاري اللون</option><option>اللون الأول</option><option>اللون الثاني</option><option>اللون الثالث</option></select>
+    <label for="size">اختاري المقاس</label><select id="size"><option value="">اختاري المقاس</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select>
+    <button class="add" onclick="addToCart()">إضافة إلى السلة</button>
+   </div>
+  </article>
+ </div>
+ <section class="panel" id="basket"><h2 class="sectionTitle">سلة المشتريات</h2><div id="items"><p class="note">السلة فارغة حالياً.</p></div><div class="total" id="total"></div></section>
+ <section class="panel"><h2 class="sectionTitle">بيانات التوصيل والطلب</h2>
+  <p class="note">هذه نسخة تجهيز أولية للمتجر. إرسال الطلبات غير مفعّل بعد إلى أن ننتهي من ربط قاعدة البيانات وتأمين استقبال الطلبات.</p>
+  <div class="checkout">
+   <div><label>الاسم الكامل</label><input id="customer" placeholder="اسمك الكامل"></div>
+   <div><label>رقم الهاتف</label><input id="phone" placeholder="09xxxxxxxx" inputmode="tel"></div>
+   <div><label>المحافظة</label><input id="gov" placeholder="المحافظة"></div>
+   <div><label>طريقة الاستلام</label><select id="delivery"><option value="">اختاري طريقة الاستلام</option><option>استلام من فرع القدموس</option><option>توصيل مباشر ضمن دمشق وريفها</option></select></div>
+   <div class="full"><label>العنوان أو اسم الفرع</label><input id="address" placeholder="المنطقة أو الفرع بالتفصيل"></div>
+  </div>
+  <button class="submit" onclick="alert('لسا استقبال الطلبات غير مفعّل. رح نفعّله بعد إكمال الربط الآمن بقاعدة البيانات.')">تأكيد الطلب (قريباً)</button>
+ </section>
+</main>
+<footer>شام ستايل © 2026 — شكراً لثقتك فينا 🩷</footer>
+<script>
+const cart=[];
+function addToCart(){
+ const color=document.getElementById('color').value,size=document.getElementById('size').value;
+ if(!color||!size){alert('اختاري اللون والمقاس أولاً 🩷');return}
+ cart.push({title:'سيت شتوي ترندي',color,size,qty:1});
+ renderCart();
+}
+function renderCart(){
+ document.getElementById('count').textContent=cart.length;
+ const box=document.getElementById('items');
+ if(!cart.length){box.innerHTML='<p class="note">السلة فارغة حالياً.</p>';document.getElementById('total').textContent='';return}
+ box.innerHTML=cart.map((x,i)=>`<div class="row"><span>${x.title} — ${x.color} — ${x.size}</span><button class="remove" onclick="removeItem(${i})">حذف</button></div>`).join('');
+ document.getElementById('total').innerHTML='المجموع: 250,000 ل.س قديمة <small style="display:block;font-size:12px;font-weight:normal">2,500 ليرة سورية جديدة لكل قطعة</small>';
+}
+function removeItem(i){cart.splice(i,1);renderCart()}
+</script>
+</body></html>
