@@ -164,7 +164,118 @@
         (branchMap[governorate] || []).map(name => `<option value="${name}">${name}</option>`).join("");
     }
 
-    async function submitOrder() {
+    
+async function submitOrder() {
+  const button = document.getElementById("submitButton");
+  const notice = document.getElementById("notice");
+
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const method = document.getElementById("method").value;
+
+  notice.classList.add("hidden");
+
+  if (!cart.length) {
+    alert("أضيفي منتجاً إلى السلة أولاً");
+    return;
+  }
+
+  if (!name || !phone || !method) {
+    alert("كمّلي الاسم ورقم الهاتف وطريقة التوصيل");
+    return;
+  }
+
+  let governorate = "";
+  let deliveryLocation = "";
+  let address = "";
+
+  if (method === "branch") {
+    governorate = document.getElementById("governorate").value;
+    deliveryLocation = document.getElementById("branch").value;
+    address = deliveryLocation;
+
+    if (!governorate || !deliveryLocation) {
+      alert("اختاري المحافظة والفرع");
+      return;
+    }
+  } else if (method === "courier") {
+    governorate = document.getElementById("courierGov").value;
+    deliveryLocation = document.getElementById("locality").value.trim();
+    address = deliveryLocation;
+
+    if (!governorate || !address) {
+      alert("كمّلي المحافظة والعنوان بالتفصيل");
+      return;
+    }
+  } else {
+    alert("اختاري طريقة توصيل صحيحة");
+    return;
+  }
+
+  const total = PRODUCT_NEW_PRICE * cart.length;
+
+  const payload = {
+    customer_name: name,
+    phone: phone,
+    city: governorate,
+    address: address,
+    branch: method === "branch" ? deliveryLocation : null,
+    items: cart.map(item => ({
+      product_id: SHAM_PRODUCT_ID,
+      color_name: item.color,
+      size: item.size,
+      quantity: 1
+    })),
+    total_price: total,
+    notes: method === "courier"
+      ? "توصيل مباشر - دمشق وريف دمشق"
+      : "الشحن عبر فرع القدموس"
+  };
+
+  button.disabled = true;
+  button.textContent = "جارٍ إرسال الطلب...";
+
+  try {
+    const response = await fetch(SUPABASE_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_PUBLISHABLE_KEY,
+        "Authorization": "Bearer " + SUPABASE_PUBLISHABLE_KEY
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.error || "تعذر إرسال الطلب، حاولي مرة أخرى"
+      );
+    }
+
+    notice.textContent =
+      `تم استلام طلبك بنجاح 🩷\n` +
+      `رقم الطلب: ${result.order_id}\n` +
+      `الإجمالي: ${total.toLocaleString("en-US")} ليرة سورية جديدة\n` +
+      `سيتم التواصل معك لتأكيد رسوم التوصيل.`;
+
+    notice.classList.remove("hidden");
+
+    cart.length = 0;
+    renderCart();
+
+    document.getElementById("name").value = "";
+    document.getElementById("phone").value = "";
+
+  } catch (error) {
+    alert(error.message || "حدث خطأ أثناء إرسال الطلب");
+  } finally {
+    button.disabled = false;
+    button.textContent = "إرسال الطلب";
+  }
+}
+    
       const button = document.getElementById("submitButton");
       const notice = document.getElementById("notice");
       const name = document.getElementById("name").value.trim();
