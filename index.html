@@ -1,92 +1,56 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>شام ستايل | SHAM STYLE</title>
-<meta name="description" content="متجر شام ستايل للأزياء النسائية">
 <style>
-:root{--pink:#d982a6;--pink2:#f8e8ef;--dark:#40343b;--muted:#827780;--line:#f0dce5;--bg:#fffafd}
-*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--dark)}
-header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
-.top{max-width:1050px;margin:auto;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{display:flex;align-items:center;gap:10px}.mark{width:42px;height:42px;border-radius:50%;background:var(--pink2);display:grid;place-items:center;color:#b85c83;font-size:22px}
-.brand b{display:block;font-size:18px;letter-spacing:.4px}.brand small{color:var(--muted);font-size:10px;letter-spacing:2px}
-.cart{border:1px solid var(--line);background:#fff;border-radius:24px;padding:9px 14px;color:var(--dark);font-weight:bold}
-.hero{max-width:1050px;margin:24px auto 18px;padding:0 18px}.heroBox{background:linear-gradient(120deg,#f8e8ef,#fff 75%);border:1px solid var(--line);border-radius:22px;padding:27px 22px;text-align:center}
-.hero h1{margin:0 0 8px;font-size:25px;color:#9d5273}.hero p{margin:0;color:var(--muted);line-height:1.8;font-size:14px}
-.wrap{max-width:1050px;margin:22px auto;padding:0 18px}.sectionTitle{font-size:19px;margin:0 0 14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:16px}
-.card{background:white;border:1px solid var(--line);border-radius:18px;overflow:hidden}
-.photo{height:220px;background:linear-gradient(145deg,#f9edf2,#eee9ed);display:grid;place-items:center;color:#b47b93;font-size:48px}
-.photo span{font-size:14px;display:block;margin-top:6px}
-.content{padding:16px}.content h3{margin:0 0 8px;font-size:18px}.desc{font-size:13px;color:var(--muted);line-height:1.7;margin:0 0 12px}
-.price{font-weight:bold;color:#a94f77;font-size:18px}.price small{display:block;font-size:12px;color:var(--muted);font-weight:normal;margin-top:3px}
-label{display:block;font-size:13px;margin:12px 0 6px;color:#62545d}
-select,input,textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--dark);font:inherit}
-button{font:inherit;cursor:pointer}.add{width:100%;margin-top:14px;border:0;background:var(--pink);color:white;padding:12px;border-radius:12px;font-weight:bold}
-.add:disabled{opacity:.5;cursor:not-allowed}
-.note{font-size:12px;color:var(--muted);line-height:1.8}
-.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;margin-top:18px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #f6edf1;font-size:14px}
-.remove{border:0;background:#fbeef3;color:#a94f77;border-radius:8px;padding:5px 9px}
-.total{font-weight:bold;color:#9d5273;font-size:18px;padding-top:13px}
-.checkout{display:grid;grid-template-columns:1fr 1fr;gap:10px}.checkout .full{grid-column:1/-1}
-.submit{width:100%;border:0;background:#6c5261;color:white;padding:13px;border-radius:12px;margin-top:12px;font-weight:bold}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:30px 15px}
-@media(max-width:560px){.checkout{grid-template-columns:1fr}.checkout .full{grid-column:auto}.hero h1{font-size:21px}}
-</style>
-</head>
+:root{--pink:#d95b91;--pink2:#f9e5ef;--ink:#211820;--muted:#51434d;--line:#e7d5df;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:#fffafd;color:var(--ink);font-family:Tahoma,Arial,sans-serif;font-weight:600;line-height:1.7}
+header{background:linear-gradient(120deg,#fff,#f8e3ed);padding:25px 16px;text-align:center;border-bottom:1px solid var(--line)}
+.logo{font-size:30px;font-weight:900;color:#9f285f}.sub{color:#382631;font-weight:700}
+main{max-width:760px;margin:22px auto;padding:0 14px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 5px 18px #6b294010}
+h1,h2,h3{color:#241720;margin:0 0 10px}h1{font-size:23px}.price{font-size:21px;color:#8d174f;font-weight:900}.oldnew{color:#31232c;font-weight:800}
+label{display:block;margin:12px 0 5px;color:#211820;font-weight:900}select,input,textarea{width:100%;padding:13px;border:1.5px solid #b99aa9;border-radius:11px;background:#fff;color:#211820;font-size:16px;font-weight:700}
+select:focus,input:focus,textarea:focus{outline:2px solid #d95b91;border-color:#a62d66}button{border:0;border-radius:12px;background:var(--pink);color:white;padding:13px 18px;font-size:16px;font-weight:900;cursor:pointer;width:100%;margin-top:12px}
+button.secondary{background:#5b3448}.hint{color:#382b34;font-size:14px;font-weight:700}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cartitem{border-bottom:1px solid var(--line);padding:10px 0;color:#211820}.total{font-size:19px;font-weight:900;color:#8d174f}.hidden{display:none}.tag{display:inline-block;background:#f8e4ee;color:#65213f;padding:4px 10px;border-radius:30px;font-weight:900}
+</style></head>
 <body>
-<header><div class="top">
- <div class="brand"><div class="mark">✿</div><div><b>شام ستايل</b><small>SHAM STYLE</small></div></div>
- <button class="cart" onclick="document.getElementById('basket').scrollIntoView({behavior:'smooth'})">السلة 🛍️ <span id="count">0</span></button>
-</div></header>
-<section class="hero"><div class="heroBox"><h1>أناقتك بتبدأ من هون 🌷</h1><p>اختاري القطعة واللون والمقاس، وضيفي طلبك للسلة بكل سهولة.<br>أهلاً وسهلاً فيكي بشام ستايل</p></div></section>
-<main class="wrap">
- <h2 class="sectionTitle">منتجاتنا</h2>
- <div class="grid" id="products">
-  <article class="card">
-   <div class="photo">🌸<span>صورة المنتج ستُضاف لاحقاً</span></div>
-   <div class="content">
-    <h3>سيت شتوي ترندي</h3>
-    <p class="desc">سيت قطعتين من الفليس التركي مع ضمانة. التوصيل خلال 15 يوم من تثبيت الطلب.</p>
-    <div class="price">250,000 ل.س قديمة <small>2,500 ليرة سورية جديدة</small></div>
-    <label for="color">اختاري اللون</label><select id="color"><option value="">اختاري اللون</option><option>اللون الأول</option><option>اللون الثاني</option><option>اللون الثالث</option></select>
-    <label for="size">اختاري المقاس</label><select id="size"><option value="">اختاري المقاس</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select>
-    <button class="add" onclick="addToCart()">إضافة إلى السلة</button>
-   </div>
-  </article>
- </div>
- <section class="panel" id="basket"><h2 class="sectionTitle">سلة المشتريات</h2><div id="items"><p class="note">السلة فارغة حالياً.</p></div><div class="total" id="total"></div></section>
- <section class="panel"><h2 class="sectionTitle">بيانات التوصيل والطلب</h2>
-  <p class="note">هذه نسخة تجهيز أولية للمتجر. إرسال الطلبات غير مفعّل بعد إلى أن ننتهي من ربط قاعدة البيانات وتأمين استقبال الطلبات.</p>
-  <div class="checkout">
-   <div><label>الاسم الكامل</label><input id="customer" placeholder="اسمك الكامل"></div>
-   <div><label>رقم الهاتف</label><input id="phone" placeholder="09xxxxxxxx" inputmode="tel"></div>
-   <div><label>المحافظة</label><input id="gov" placeholder="المحافظة"></div>
-   <div><label>طريقة الاستلام</label><select id="delivery"><option value="">اختاري طريقة الاستلام</option><option>استلام من فرع القدموس</option><option>توصيل مباشر ضمن دمشق وريفها</option></select></div>
-   <div class="full"><label>العنوان أو اسم الفرع</label><input id="address" placeholder="المنطقة أو الفرع بالتفصيل"></div>
-  </div>
-  <button class="submit" onclick="alert('لسا استقبال الطلبات غير مفعّل. رح نفعّله بعد إكمال الربط الآمن بقاعدة البيانات.')">تأكيد الطلب (قريباً)</button>
- </section>
+<header><div class="logo">شام ستايل</div><div class="sub">SHAM STYLE · أناقتك بتفاصيلها 🩷</div></header>
+<main>
+<section class="card">
+<div class="tag">وصل حديثاً</div><h1 style="margin-top:10px">سيت شتوي ترندي</h1>
+<p class="hint">طقم قطعتين من قماش الفرو التركي مع ضمان.</p>
+<div class="price">250,000 ل.س قديمة</div><div class="oldnew">2,500 ليرة سورية جديدة</div>
+<label for="color">اختاري اللون</label><select id="color"><option value="">اختاري اللون</option><option>اللون الأول</option><option>اللون الثاني</option><option>اللون الثالث</option></select>
+<label for="size">اختاري القياس</label><select id="size"><option value="">اختاري القياس</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select>
+<button onclick="addCart()">أضيفي إلى السلة</button><p class="hint">التوصيل خلال 15 يوماً من تثبيت الطلب.</p>
+</section>
+<section class="card"><h2>سلة المشتريات</h2><div id="cart"><p class="hint">السلة فارغة حالياً.</p></div><div class="total" id="total"></div></section>
+<section class="card"><h2>إتمام الطلب</h2>
+<label for="name">الاسم الكامل</label><input id="name" autocomplete="name" placeholder="اكتبي اسمك الكامل">
+<label for="phone">رقم الهاتف</label><input id="phone" inputmode="tel" placeholder="09xxxxxxxx">
+<label for="method">طريقة التوصيل</label><select id="method" onchange="deliveryChanged()"><option value="">اختاري طريقة التوصيل</option><option value="branch">استلام من فرع القدموس</option><option value="courier">توصيل مباشر (دمشق وريف دمشق)</option></select>
+<div id="branchArea" class="hidden"><label for="governorate">المحافظة</label><select id="governorate" onchange="branchesChanged()"><option value="">اختاري المحافظة</option></select><label for="branch">الفرع</label><select id="branch"><option value="">اختاري الفرع</option></select></div>
+<div id="courierArea" class="hidden"><label for="courierGov">المحافظة</label><select id="courierGov"><option value="">اختاري المحافظة</option><option>دمشق</option><option>ريف دمشق</option></select><label for="locality">المنطقة والعنوان بالتفصيل</label><textarea id="locality" rows="3" placeholder="المنطقة، الشارع، أقرب نقطة دالة"></textarea></div>
+<p class="hint">رسوم التوصيل غير مضافة حالياً، وسيتم تأكيدها قبل تثبيت الطلب.</p>
+<button class="secondary" onclick="submitOrder()">تأكيد تفاصيل الطلب</button><p id="notice" class="hint"></p>
+</section>
 </main>
-<footer>شام ستايل © 2026 — شكراً لثقتك فينا 🩷</footer>
 <script>
-const cart=[];
-function addToCart(){
- const color=document.getElementById('color').value,size=document.getElementById('size').value;
- if(!color||!size){alert('اختاري اللون والمقاس أولاً 🩷');return}
- cart.push({title:'سيت شتوي ترندي',color,size,qty:1});
- renderCart();
-}
-function renderCart(){
- document.getElementById('count').textContent=cart.length;
- const box=document.getElementById('items');
- if(!cart.length){box.innerHTML='<p class="note">السلة فارغة حالياً.</p>';document.getElementById('total').textContent='';return}
- box.innerHTML=cart.map((x,i)=>`<div class="row"><span>${x.title} — ${x.color} — ${x.size}</span><button class="remove" onclick="removeItem(${i})">حذف</button></div>`).join('');
- document.getElementById('total').innerHTML='المجموع: 250,000 ل.س قديمة <small style="display:block;font-size:12px;font-weight:normal">2,500 ليرة سورية جديدة لكل قطعة</small>';
-}
+const branchMap={
+'اللاذقية':['8 آذار','الجامعة (سبيرو)','الزراعة','سوق التجار','الرمل الشمالي','بوقا'],
+'جبلة':['جبلة','جبلة رأس العين','القرداحة'],
+'حمص':['الزهرا','الحمرا','الحضارة','جورة الشياح','شين','الحواش (وادي النصارى)'],
+'حماه':['الكراج','العاصي','سلحب','سقيلبية','سلمية','مصياف','محردة'],
+'حلب':['الفرقان','الجميلية'],
+'طرطوس':['طرطوس','المنطار','المحطة','الكراج القديم','الشيخ سعد','الشيخ بدر','دريكيش','صافيتا','بانياس','مدينة القدموس'],
+'درعا':['درعا (القصور)','الصنمين','القطيفة','يبرود','قطنا','دير عطية','النبك'],
+'دمشق':['الحمرا','ضاحية الأسد','البرامكة','الحريقة','جرمانا','جديدة عرطوز','صحنايا']};
+let cart=[];
+function addCart(){let c=document.getElementById('color').value,s=document.getElementById('size').value;if(!c||!s){alert('اختاري اللون والقياس أولاً');return}cart.push({color:c,size:s});renderCart();alert('تمت إضافة القطعة إلى السلة 🩷')}
+function renderCart(){let el=document.getElementById('cart');if(!cart.length){el.innerHTML='<p class="hint">السلة فارغة حالياً.</p>';document.getElementById('total').textContent='';return}el.innerHTML=cart.map((x,i)=>`<div class="cartitem">قطعة ${i+1}: ${x.color} — قياس ${x.size} <button style="width:auto;padding:5px 10px;margin:4px" onclick="removeItem(${i})">حذف</button></div>`).join('');document.getElementById('total').innerHTML='الإجمالي: 250,000 ل.س قديمة<br>2,500 ليرة سورية جديدة';}
 function removeItem(i){cart.splice(i,1);renderCart()}
-</script>
-</body></html>
+function deliveryChanged(){let m=document.getElementById('method').value;document.getElementById('branchArea').classList.toggle('hidden',m!=='branch');document.getElementById('courierArea').classList.toggle('hidden',m!=='courier');if(m==='branch'){let g=document.getElementById('governorate');g.innerHTML='<option value="">اختاري المحافظة</option>'+Object.keys(branchMap).map(x=>`<option>${x}</option>`).join('');document.getElementById('branch').innerHTML='<option value="">اختاري الفرع</option>'}}
+function branchesChanged(){let gov=document.getElementById('governorate').value,b=document.getElementById('branch');b.innerHTML='<option value="">اختاري الفرع</option>'+(branchMap[gov]||[]).map(x=>`<option>${x}</option>`).join('')}
+function submitOrder(){let n=document.getElementById('name').value.trim(),p=document.getElementById('phone').value.trim(),m=document.getElementById('method').value;if(!cart.length){alert('أضيفي منتجاً إلى السلة أولاً');return}if(!n||!p||!m){alert('كمّلي الاسم ورقم الهاتف وطريقة التوصيل');return}if(m==='branch'&&(!document.getElementById('governorate').value||!document.getElementById('branch').value)){alert('اختاري المحافظة والفرع');return}if(m==='courier'&&(!document.getElementById('courierGov').value||!document.getElementById('locality').value.trim())){alert('كمّلي المحافظة والعنوان');return}document.getElementById('notice').textContent='تم التحقق من البيانات على هذه الصفحة فقط. استقبال الطلبات الإلكتروني غير مفعّل بعد، فلا تعتبري الطلب مرسلاً.';}
+</script></body></html>
