@@ -4,6 +4,7 @@ const $=id=>document.getElementById(id);
 
 const KEY='sham_style_products_v1';
 const CART='sham_style_cart_v1';
+const ADMIN_PASSWORD='4444';
 
 let products=JSON.parse(localStorage.getItem(KEY)||'[]');
 let cart=JSON.parse(localStorage.getItem(CART)||'[]');
@@ -47,9 +48,37 @@ function view(name){
  if(name==='admin') renderAdmin();
 }
 
-document.querySelectorAll('.navbtn').forEach(b=>
- b.onclick=()=>view(b.dataset.view)
-);
+// دخول الإدارة بكلمة المرور
+function openAdmin(){
+ if(location.hash!=='#admin')return;
+
+ const password=prompt('أدخلي كلمة مرور الإدارة');
+
+ if(password===ADMIN_PASSWORD){
+  view('admin');
+ }else{
+  history.replaceState(null,'',location.pathname+location.search);
+  view('shop');
+  toast('كلمة المرور غير صحيحة');
+ }
+}
+
+// مراقبة رابط الإدارة
+window.addEventListener('hashchange',()=>{
+ if(location.hash==='#admin'){
+  openAdmin();
+ }else{
+  view('shop');
+ }
+});
+
+// أزرار المتجر والسلة فقط
+document.querySelectorAll('.navbtn').forEach(b=>{
+ b.onclick=()=>{
+  if(b.dataset.view==='admin')return;
+  view(b.dataset.view);
+ };
+});
 
 function renderShop(){
  let q=$('search').value.toLowerCase();
@@ -284,7 +313,11 @@ function clearForm(){
 
 $('cancelEdit').onclick=clearForm;
 
-$('logoutAdmin').onclick=()=>view('shop');
+// إغلاق الإدارة والعودة للمتجر
+$('logoutAdmin').onclick=()=>{
+ history.replaceState(null,'',location.pathname+location.search);
+ view('shop');
+};
 
 function renderAdmin(){
  $('adminProducts').innerHTML=products.map(p=>`
@@ -343,8 +376,15 @@ window.deleteProduct=id=>{
 $('search').oninput=renderShop;
 $('categoryFilter').onchange=renderShop;
 
+// تشغيل المتجر وفتح الإدارة عند استخدام الرابط الخاص
 renderShop();
 renderCount();
-view('shop');
+
+if(location.hash==='#admin'){
+ openAdmin();
+}else{
+ view('shop');
+}
 
 })();
+ 
