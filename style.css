@@ -8,6 +8,7 @@ body {
   background: #fffafb;
   color: #382b31;
   font-family: Arial, Tahoma, sans-serif;
+  direction: rtl;
 }
 
 .top {
@@ -65,17 +66,17 @@ nav {
 
 main {
   max-width: 1100px;
-  margin: 25px auto;
-  padding: 0 16px;
+  margin: 22px auto;
+  padding: 0 12px;
   min-height: 70vh;
 }
 
 .hero {
   background: linear-gradient(120deg, #f8e5ec, #fff4f7);
-  padding: 34px 22px;
+  padding: 30px 20px;
   border-radius: 18px;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .hero p {
@@ -94,26 +95,26 @@ main {
   margin: 18px 0;
 }
 
-.toolbar input {
-  flex: 1;
-}
-
-/* شبكة المنتجات */
+/* شبكة المنتجات المتدرجة */
 .products {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  align-items: start;
+  display: block;
+  column-count: 2;
+  column-gap: 11px;
+  width: 100%;
 }
 
 .product {
-  background: white;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 11px;
+  padding: 7px;
+  background: #fff;
   border: 1px solid #f0dfe6;
   border-radius: 13px;
-  padding: 8px;
-  box-shadow: 0 5px 18px #6e40500b;
-  min-width: 0;
+  box-shadow: 0 3px 13px #6e40500b;
   overflow: hidden;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
 }
 
 .product-open {
@@ -131,7 +132,8 @@ main {
 .product img {
   display: block;
   width: 100%;
-  height: 165px;
+  height: auto;
+  max-height: 350px;
   object-fit: cover;
   border-radius: 9px;
   background: #f8f0f3;
@@ -139,9 +141,9 @@ main {
 
 .product h3 {
   font-size: 14px;
-  margin: 9px 2px 6px;
   line-height: 1.5;
-  min-height: 40px;
+  margin: 9px 3px 5px;
+  min-height: 0;
 }
 
 .price {
@@ -151,81 +153,143 @@ main {
 }
 
 .product .price {
-  margin: 4px 2px 7px;
+  margin: 5px 3px;
 }
 
 .details-hint {
   display: block;
-  color: #9b7b8b;
-  font-size: 11px;
-  margin: 7px 2px 3px;
+  color: #8f7180;
+  font-size: 12px;
+  margin: 7px 3px 4px;
 }
 
-/* تفاصيل المنتج */
+/* صفحة تفاصيل المنتج */
 #productDetailsView {
-  max-width: 850px;
+  max-width: 700px;
   margin: 0 auto;
 }
 
+#backToShop {
+  margin-bottom: 12px;
+}
+
 #productDetails {
-  margin-top: 15px;
+  width: 100%;
 }
 
 .product-detail {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 24px;
+  display: block;
+  width: 100%;
   background: white;
   border: 1px solid #f0dfe6;
   border-radius: 17px;
-  padding: 18px;
+  overflow: hidden;
   box-shadow: 0 5px 18px #6e40500b;
 }
 
-.detail-image {
+.detail-photo-wrap {
   width: 100%;
-  height: 430px;
+  background: #fff7fa;
+  text-align: center;
+}
+
+.detail-image {
+  display: block;
+  width: 100%;
+  height: min(68vh, 570px);
   object-fit: contain;
   background: #fff7fa;
-  border-radius: 12px;
+}
+
+.detail-info {
+  padding: 18px;
 }
 
 .detail-info h2 {
-  margin: 5px 0 12px;
-  font-size: 23px;
+  font-size: 22px;
+  margin: 0 0 9px;
+  line-height: 1.6;
 }
 
 .detail-price {
-  font-size: 21px;
-  margin-bottom: 15px;
+  font-size: 23px;
+  margin: 5px 0 14px;
 }
 
-.detail-info p {
+.detail-description {
   color: #765c68;
-  line-height: 1.8;
+  font-size: 14px;
+  line-height: 1.9;
   white-space: pre-wrap;
+  margin: 10px 0 18px;
 }
 
-.detail-info label {
-  margin-top: 17px;
+.choice-section {
+  margin-top: 22px;
+  padding-top: 15px;
+  border-top: 1px solid #f2e3e9;
 }
 
-.detail-info select {
-  margin-top: 7px;
+.choice-section h3 {
+  color: #533746;
+  font-size: 16px;
+  margin: 0 0 12px;
 }
 
-.detail-info .primary {
-  margin-top: 20px;
+.choice-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
 }
 
+.choice-btn {
+  border: 1px solid #e8d5de;
+  background: #fff;
+  color: #654657;
+  border-radius: 10px;
+  padding: 11px 16px;
+  min-width: 48px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: .15s ease;
+}
+
+.choice-btn.selected {
+  border: 2px solid #a65378;
+  background: #f9e7ef;
+  color: #963f68;
+  font-weight: bold;
+  box-shadow: 0 2px 7px #a6537820;
+}
+
+.size-options .choice-btn {
+  min-width: 65px;
+}
+
+.selected-label {
+  font-size: 12px;
+  color: #a65378;
+  margin-top: 9px;
+  min-height: 18px;
+}
+
+.detail-cart-btn {
+  margin-top: 24px;
+  min-height: 49px;
+  font-size: 16px;
+}
+
+/* الأزرار والحقول */
 .primary {
   background: #a65378;
   color: #fff;
   border: 0;
-  border-radius: 10px;
+  border-radius: 11px;
   padding: 12px 17px;
   cursor: pointer;
   font-weight: bold;
+  font-family: inherit;
 }
 
 .primary:disabled {
@@ -272,6 +336,7 @@ label textarea {
   grid-column: 1 / -1;
 }
 
+/* السلة والتوصيل */
 .checkout {
   background: white;
   border: 1px solid #f0dfe6;
@@ -319,6 +384,7 @@ label textarea {
   cursor: pointer;
 }
 
+/* الإدارة */
 .adminhead,
 .actions {
   display: flex;
@@ -391,15 +457,15 @@ footer {
   z-index: 9999;
 }
 
-/* الموبايل */
+/* تصميم الموبايل */
 @media (max-width: 600px) {
   main {
-    margin: 15px auto;
-    padding: 0 10px;
+    margin: 13px auto;
+    padding: 0 9px;
   }
 
   .hero {
-    padding: 24px 14px;
+    padding: 22px 13px;
   }
 
   .hero h1 {
@@ -411,22 +477,24 @@ footer {
   }
 
   .products {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 9px;
+    column-count: 2;
+    column-gap: 8px;
   }
 
   .product {
-    padding: 6px;
+    padding: 5px;
+    margin-bottom: 8px;
     border-radius: 11px;
   }
 
   .product img {
-    height: 145px;
+    max-height: none;
+    border-radius: 8px;
   }
 
   .product h3 {
     font-size: 13px;
-    min-height: 38px;
+    margin: 7px 2px 4px;
   }
 
   .product .price {
@@ -437,18 +505,27 @@ footer {
     font-size: 10px;
   }
 
-  .product-detail {
-    grid-template-columns: 1fr;
-    gap: 14px;
-    padding: 12px;
+  .detail-image {
+    height: 58vh;
+    min-height: 300px;
+    max-height: 510px;
   }
 
-  .detail-image {
-    height: 330px;
+  .detail-info {
+    padding: 15px 13px 20px;
   }
 
   .detail-info h2 {
-    font-size: 20px;
+    font-size: 19px;
+  }
+
+  .detail-price {
+    font-size: 21px;
+  }
+
+  .choice-btn {
+    padding: 10px 13px;
+    font-size: 13px;
   }
 
   .formgrid {
@@ -492,12 +569,15 @@ footer {
 }
 
 @media (max-width: 350px) {
-  .product img {
-    height: 120px;
+  .products {
+    column-gap: 6px;
   }
 
   .product h3 {
     font-size: 12px;
   }
+
+  .choice-btn {
+    padding: 9px 10px;
   }
-  
+  }
