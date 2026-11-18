@@ -308,7 +308,11 @@ window.addEventListener('hashchange',()=>{
 
 document.querySelectorAll('.navbtn').forEach(b=>{
  b.onclick=()=>{
-  if(b.dataset.view==='admin')return;
+  if(b.dataset.view==='admin'){
+   location.hash='admin';
+   return;
+  }
+  history.replaceState(null,'',location.pathname+location.search);
   view(b.dataset.view);
  };
 });
