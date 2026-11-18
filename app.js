@@ -1,3 +1,4 @@
+
 (()=>{
 'use strict';
 
@@ -5,17 +6,26 @@ const $=id=>document.getElementById(id);
 
 const KEY='sham_style_products_v1';
 const CART='sham_style_cart_v1';
-const ADMIN_PASSWORD='4444';
+const SESSION_KEY='sham_style_admin_session_v1';
+const OWNER_ID='13ab5af3-317b-4fe1-b086-7b89b70521b1';
 
 const config=window.SHAM_CONFIG||{};
 const SUPABASE_URL=(config.supabaseUrl||'').replace(/\/$/,'');
 const SUPABASE_KEY=config.supabaseKey||'';
 const BUCKET=config.storageBucket||'products';
+const TABLE='sham_style_products';
 
-let products=JSON.parse(localStorage.getItem(KEY)||'[]');
+let products=[];
 let cart=JSON.parse(localStorage.getItem(CART)||'[]');
 let pendingFile=null;
 let currentProductId=null;
+let adminSession=null;
+let loginBusy=false;
+
+try{
+ products=JSON.parse(localStorage.getItem(KEY)||'[]');
+ if(!Array.isArray(products))products=[];
+}catch(e){products=[];}
 
 const governors=[
 'دمشق','ريف دمشق','حلب','حمص','حماة',
@@ -23,7 +33,6 @@ const governors=[
 'دير الزور','الرقة','درعا','السويداء','القنيطرة'
 ];
 
-// فروع شركة القدموس - كما أرسلتها صاحبة المتجر
 const qadamousBranches={
 'اللاذقية':['8 آذار','الجامعة (سبيرو)','الزراعة','سوق التجار','الرمل الشمالي','بوقا'],
 'جبلة':['جبلة','جبلة رأس العين','القرداحة'],
@@ -35,7 +44,6 @@ const qadamousBranches={
 'دمشق':['الحمرا','ضاحية الأسد','البرامكة','الحريقة','جرمانا','جديدة عرطوز','صحنايا']
 };
 
-// فروع مسارات والهرم - مع العناوين كما وصلت
 const masaratBranches={
 'إدلب':[
 ['إدلب المدينة','شمال القصر العدلي جانب ساحة سريتيل'],
@@ -120,7 +128,290 @@ function money(n){
  return Number(n||0).toLocaleString('en-US')+' ل.س';
 }
 
-// رفع الصورة إلى Supabase
+function supabaseReady(){
+ return !!(SUPABASE_URL&&SUPABASE_KEY);
+}
+
+function sessionHeaders(){
+ return {
+  'apikey':SUPABASE_KEY,
+  'Authorization':'Bearer '+(adminSession?.access_token||SUPABASE_KEY),
+  'Content-Type':'application/json'
+ };
+}
+
+function saveSession(){
+ if(adminSession){
+  sessionStorage.setItem(SESSION_KEY,JSON.stringify(adminSession));
+ }
+}
+
+function clearSession(){
+ adminSession=null;
+ sessionStorage.removeItem(SESSION_KEY);
+}
+
+async function authRequest(path,body){
+ const response=await fetch(SUPABASE_URL+'/auth/v1/'+path,{
+  method:'POST',
+  headers:{
+   'apikey':SUPABASE_KEY,
+   'Content-Type':'application/json'
+  },
+  body:JSON.stringify(body)
+ });
+
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok){
+  throw new Error(data.msg||data.message||data.error_description||'تعذر تسجيل الدخول');
+ }
+ return data;
+}
+
+async function restoreSession(){
+ try{
+  const saved=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');
+  if(!saved?.access_token)return false;
+
+  adminSession=saved;
+
+  const response=await fetch(SUPABASE_URL+'/auth/v1/user',{
+   headers:{
+    'apikey':SUPABASE_KEY,
+    'Authorization':'Bearer '+adminSession.access_token
+   }
+  });
+
+  if(response.ok){
+   const user=await response.json();
+   if(user.id===OWNER_ID){
+    adminSession.user=user;
+    return true;
+   }
+  }
+
+  if(adminSession.refresh_token){
+   const refreshed=await authRequest('token?grant_type=refresh_token',{
+    refresh_token:adminSession.refresh_token
+   });
+
+   if(refreshed.user?.id===OWNER_ID){
+    adminSession=refreshed;
+    saveSession();
+    return true;
+   }
+  }
+ }catch(e){
+  console.warn('Session restore:',e);
+ }
+
+ clearSession();
+ return false;
+}
+
+async function loginAdmin(email,password){
+ const data=await authRequest('token?grant_type=password',{
+  email,
+  password
+ });
+
+ if(data.user?.id!==OWNER_ID){
+  try{
+   await fetch(SUPABASE_URL+'/auth/v1/logout',{
+    method:'POST',
+    headers:{
+     'apikey':SUPABASE_KEY,
+     'Authorization':'Bearer '+data.access_token
+    }
+   });
+  }catch(e){}
+
+  throw new Error('هذا الحساب غير مخوّل لإدارة متجر شام ستايل');
+ }
+
+ adminSession=data;
+ saveSession();
+}
+
+function showLogin(){
+ let modal=$('shamLoginModal');
+
+ if(!modal){
+  modal=document.createElement('div');
+  modal.id='shamLoginModal';
+  modal.style.cssText=
+   'position:fixed;inset:0;z-index:99999;background:#0009;display:flex;align-items:center;justify-content:center;padding:18px;';
+
+  modal.innerHTML=`
+   <form id="shamLoginForm" style="background:white;color:#333;width:100%;max-width:380px;padding:25px;border-radius:18px;box-shadow:0 10px 40px #0003;">
+    <h2 style="margin:0 0 8px;text-align:center;">إدارة شام ستايل 🩷</h2>
+    <p style="text-align:center;margin:0 0 20px;color:#777;">سجّلي الدخول بحساب الإدارة</p>
+
+    <label style="display:block;margin-bottom:6px;">البريد الإلكتروني</label>
+    <input id="shamLoginEmail" type="email" required autocomplete="username" style="box-sizing:border-box;width:100%;padding:12px;margin-bottom:14px;border:1px solid #ddd;border-radius:9px;">
+
+    <label style="display:block;margin-bottom:6px;">كلمة المرور</label>
+    <input id="shamLoginPassword" type="password" required autocomplete="current-password" style="box-sizing:border-box;width:100%;padding:12px;margin-bottom:15px;border:1px solid #ddd;border-radius:9px;">
+
+    <p id="shamLoginError" style="color:#c33;font-size:13px;min-height:18px;"></p>
+
+    <button id="shamLoginSubmit" type="submit" style="width:100%;padding:13px;border:0;border-radius:10px;background:#d85b91;color:white;font-size:16px;">دخول</button>
+
+    <button id="shamLoginCancel" type="button" style="width:100%;padding:11px;margin-top:9px;border:1px solid #ddd;border-radius:10px;background:white;">رجوع للمتجر</button>
+   </form>
+  `;
+
+  document.body.appendChild(modal);
+
+  $('shamLoginCancel').onclick=()=>{
+   modal.remove();
+   history.replaceState(null,'',location.pathname+location.search);
+   view('shop');
+  };
+
+  $('shamLoginForm').onsubmit=async e=>{
+   e.preventDefault();
+   if(loginBusy)return;
+   loginBusy=true;
+
+   const btn=$('shamLoginSubmit');
+   const error=$('shamLoginError');
+   btn.disabled=true;
+   btn.textContent='جاري التحقق...';
+   error.textContent='';
+
+   try{
+    if(!supabaseReady())throw new Error('إعدادات Supabase غير موجودة في config.js');
+
+    await loginAdmin(
+     $('shamLoginEmail').value.trim(),
+     $('shamLoginPassword').value
+    );
+
+    modal.remove();
+    await enterAdmin();
+   }catch(err){
+    error.textContent=err.message||'حدث خطأ أثناء تسجيل الدخول';
+   }finally{
+    loginBusy=false;
+    if($('shamLoginSubmit')){
+     $('shamLoginSubmit').disabled=false;
+     $('shamLoginSubmit').textContent='دخول';
+    }
+   }
+  };
+ }
+
+ $('shamLoginEmail')?.focus();
+}
+
+async function apiProducts(method='GET',id=null,data=null){
+ let url=SUPABASE_URL+'/rest/v1/'+TABLE+'?select=*';
+
+ if(id!==null){
+  url=SUPABASE_URL+'/rest/v1/'+TABLE+'?id=eq.'+encodeURIComponent(id);
+ }
+
+ const options={
+  method,
+  headers:sessionHeaders()
+ };
+
+ if(data!==null){
+  options.headers['Prefer']='return=representation';
+  options.body=JSON.stringify(data);
+ }
+
+ const response=await fetch(url,options);
+ const text=await response.text();
+
+ if(!response.ok){
+  throw new Error(text||'حدث خطأ في قاعدة البيانات');
+ }
+
+ return text?JSON.parse(text):[];
+}
+
+function fromDatabase(row){
+ return {
+  id:String(row.id),
+  name:row.name||'',
+  price:Number(row.price||0),
+  category:row.category||'',
+  image:row.image||'',
+  sizes:Array.isArray(row.sizes)?row.sizes:[],
+  colors:Array.isArray(row.colors)?row.colors:[],
+  description:row.description||''
+ };
+}
+
+async function loadPublicProducts(){
+ if(!supabaseReady()){
+  renderShop();
+  return;
+ }
+
+ try{
+  const response=await fetch(
+   SUPABASE_URL+'/rest/v1/'+TABLE+'?select=*&order=created_at.desc',
+   {headers:{'apikey':SUPABASE_KEY}}
+  );
+
+  if(!response.ok)throw new Error(await response.text());
+
+  const rows=await response.json();
+  products=rows.map(fromDatabase);
+  save();
+  renderShop();
+  renderCount();
+ }catch(error){
+  console.error(error);
+  renderShop();
+  toast('تعذر تحميل المنتجات من قاعدة البيانات');
+ }
+}
+
+async function syncLocalProducts(localProducts){
+ const remote=await apiProducts('GET');
+ const remoteIds=new Set(remote.map(p=>String(p.id)));
+
+ for(const p of localProducts){
+  if(remoteIds.has(String(p.id)))continue;
+
+  await apiProducts('POST',null,{
+   id:String(p.id),
+   name:p.name||'منتج',
+   price:Number(p.price||0),
+   category:p.category||'',
+   image:p.image||'',
+   sizes:Array.isArray(p.sizes)?p.sizes:[],
+   colors:Array.isArray(p.colors)?p.colors:[],
+   description:p.description||'',
+   owner_id:OWNER_ID
+  });
+ }
+
+ const updated=await apiProducts('GET');
+ products=updated.map(fromDatabase);
+ save();
+}
+
+async function enterAdmin(){
+ try{
+  const localProducts=JSON.parse(localStorage.getItem(KEY)||'[]');
+
+  await syncLocalProducts(Array.isArray(localProducts)?localProducts:[]);
+
+  view('admin');
+  renderShop();
+  renderAdmin();
+  toast('تم تسجيل الدخول بنجاح 🩷');
+ }catch(error){
+  console.error(error);
+  toast('تعذر تحميل المنتجات: '+error.message);
+ }
+}
+
 async function uploadImage(file){
  if(!SUPABASE_URL||!SUPABASE_KEY){
   throw new Error('إعدادات Supabase غير موجودة في config.js');
@@ -138,10 +429,10 @@ async function uploadImage(file){
  const response=await fetch(uploadUrl,{
   method:'POST',
   headers:{
- 'apikey':SUPABASE_KEY,
- 'Content-Type':file.type||'image/jpeg',
- 'x-upsert':'false'
-},
+   'apikey':SUPABASE_KEY,
+   'Content-Type':file.type||'image/jpeg',
+   'x-upsert':'false'
+  },
   body:file
  });
 
@@ -154,7 +445,6 @@ async function uploadImage(file){
   '/storage/v1/object/public/'+BUCKET+'/'+fileName;
 }
 
-// تحويل الصور القديمة المحفوظة بصيغة Base64
 async function oldImageToFile(data){
  const response=await fetch(data);
  const blob=await response.blob();
@@ -163,7 +453,6 @@ async function oldImageToFile(data){
  });
 }
 
-// تجهيز المحافظات دون تكرار الخيارات الموجودة في HTML
 function setupGovernors(){
  const select=$('governorate');
  if(!select)return;
@@ -174,7 +463,6 @@ function setupGovernors(){
  }
 }
 
-// التنقل بين الصفحات
 function hideViews(){
  document.querySelectorAll('.view').forEach(x=>x.hidden=true);
 }
@@ -192,7 +480,6 @@ function view(name){
  if(name==='admin')renderAdmin();
 }
 
-
 function showProductDetails(id){
  const p=products.find(x=>String(x.id)===String(id));
  if(!p)return;
@@ -207,7 +494,6 @@ function showProductDetails(id){
    <div class="detail-photo-wrap">
     <img class="detail-image" src="${esc(p.image||'')}" alt="${esc(p.name)}">
    </div>
-
    <div class="detail-info">
     <h2>${esc(p.name)}</h2>
     <div class="price detail-price">${money(p.price)}</div>
@@ -217,9 +503,8 @@ function showProductDetails(id){
     <div class="choice-section">
      <h3>اختاري اللون</h3>
      <div class="choice-options" id="detailColors">
-      ${(p.colors||[]).map((c,i)=>`
-       <button type="button" class="choice-btn color-choice"
-        data-value="${esc(c)}">${esc(c)}</button>
+      ${(p.colors||[]).map(c=>`
+       <button type="button" class="choice-btn color-choice" data-value="${esc(c)}">${esc(c)}</button>
       `).join('')}
      </div>
      <div class="selected-label" id="selectedColorLabel">لم يتم اختيار اللون</div>
@@ -229,16 +514,13 @@ function showProductDetails(id){
      <h3>اختاري القياس</h3>
      <div class="choice-options size-options" id="detailSizes">
       ${(p.sizes||[]).map(s=>`
-       <button type="button" class="choice-btn size-choice"
-        data-value="${esc(s)}">${esc(s)}</button>
+       <button type="button" class="choice-btn size-choice" data-value="${esc(s)}">${esc(s)}</button>
       `).join('')}
      </div>
      <div class="selected-label" id="selectedSizeLabel">لم يتم اختيار القياس</div>
     </div>
 
-    <button type="button" class="primary full detail-cart-btn" id="detailAddToCart">
-     أضيفي إلى السلة 🛍️
-    </button>
+    <button type="button" class="primary full detail-cart-btn" id="detailAddToCart">أضيفي إلى السلة 🛍️</button>
    </div>
   </div>
  `;
@@ -270,25 +552,16 @@ function showProductDetails(id){
   addProductToCart(currentProductId,selectedSize,selectedColor);
  };
 }
- 
 
- 
+$('backToShop').onclick=()=>view('shop');
 
-$('backToShop').onclick=()=>{
- view('shop');
-};
-
-function openAdmin(){
+async function openAdmin(){
  if(location.hash!=='#admin')return;
 
- const password=prompt('أدخلي كلمة مرور الإدارة');
-
- if(password===ADMIN_PASSWORD){
-  view('admin');
+ if(await restoreSession()){
+  await enterAdmin();
  }else{
-  history.replaceState(null,'',location.pathname+location.search);
-  view('shop');
-  toast('كلمة المرور غير صحيحة');
+  showLogin();
  }
 }
 
@@ -296,6 +569,8 @@ window.addEventListener('hashchange',()=>{
  if(location.hash==='#admin'){
   openAdmin();
  }else{
+  const modal=$('shamLoginModal');
+  if(modal)modal.remove();
   view('shop');
  }
 });
@@ -311,7 +586,6 @@ document.querySelectorAll('.navbtn').forEach(b=>{
  };
 });
 
-// عرض المنتجات في المتجر
 function renderShop(){
  const q=($('search').value||'').toLowerCase();
  const cat=$('categoryFilter').value;
@@ -334,7 +608,6 @@ function renderShop(){
 
  $('emptyShop').hidden=list.length>0;
 
- // فتح تفاصيل المنتج عند الضغط على بطاقته
  $('products').querySelectorAll('[data-product-id]').forEach(btn=>{
   btn.onclick=()=>showProductDetails(btn.dataset.productId);
  });
@@ -349,7 +622,6 @@ function renderShop(){
  $('categoryFilter').value=old;
 }
 
-// إضافة منتج للسلة بعد اختيار القياس واللون
 function addProductToCart(id,size,color){
  const p=products.find(x=>String(x.id)===String(id));
  if(!p)return;
@@ -416,7 +688,6 @@ window.removeCart=i=>{
  renderCount();
 };
 
-// تجهيز خيارات الفروع حسب شركة الشحن والمحافظة
 function updateBranches(){
  const method=$('delivery').value;
  const gov=$('governorate').value;
@@ -446,7 +717,6 @@ function updateBranches(){
  if(method==='قدَموس'){
   let branches=[];
 
-  // فرع جبلة ضمن محافظة اللاذقية
   if(gov==='اللاذقية'){
    branches=[
     ...qadamousBranches['اللاذقية'],
@@ -460,10 +730,7 @@ function updateBranches(){
  }
 
  if(method==='مسارات والهرم'){
-  let key=gov;
-  if(gov==='إدلب')key='إدلب';
-
-  const branches=masaratBranches[key]||[];
+  const branches=masaratBranches[gov]||[];
 
   branches.forEach(([name,addressText])=>{
    const label=addressText?name+' — '+addressText:name;
@@ -478,6 +745,7 @@ function updateBranches(){
 }
 
 $('delivery').onchange=updateBranches;
+
 $('governorate').onchange=()=>{
  $('delivery').value='';
  $('branchAddress').innerHTML='<option value="">اختاري طريقة التوصيل أولاً</option>';
@@ -485,7 +753,6 @@ $('governorate').onchange=()=>{
  $('customerAddress').required=false;
 };
 
-// إرسال الطلب عبر واتساب
 $('sendOrder').onclick=()=>{
  if(!cart.length)return;
 
@@ -508,213 +775,4 @@ $('sendOrder').onclick=()=>{
    toast('اكتبي عنوان المنزل بالتفصيل');
    return;
   }
-  deliveryDetails='توصيل للعنوان مباشرة - '+address;
- }else{
-  if(!branch||$('branchAddress').disabled){
-   toast('اختاري فرع الاستلام من القائمة');
-   return;
-  }
-  deliveryDetails=branch;
-  if(address)deliveryDetails+=' - تفاصيل إضافية: '+address;
- }
-
- const orderLines=cart.map((x,i)=>{
-  const p=products.find(p=>String(p.id)===String(x.id))||{};
-
-  return `${i+1}) ${p.name||'منتج'}
-القياس: ${x.size}
-اللون: ${x.color}
-الكمية: ${x.qty}
-السعر: ${money(p.price)}
-رابط الصورة: ${p.image||'غير متوفر'}`;
- }).join('\n\n');
-
- const total=cart.reduce((a,x)=>
-  a+Number(x.qty||0)*Number((products.find(p=>String(p.id)===String(x.id))||{}).price||0),0
- );
-
- const msg=`طلب جديد من متجر شام ستايل 🩷
-الاسم: ${name}
-الهاتف: ${phone}
-المحافظة: ${gov}
-طريقة التوصيل: ${delivery}
-الفرع/العنوان: ${deliveryDetails}
-
-${orderLines}
-
-المجموع: ${money(total)}
-ملاحظات: ${$('notes').value||'لا يوجد'}`;
-
- const n=config.whatsappNumber||'';
-
- if(!n){
-  toast('تأكدي من رقم واتساب المتجر في config.js');
-  return;
- }
-
- window.open(
-  'https://wa.me/'+n+'?text='+encodeURIComponent(msg),
-  '_blank'
- );
-};
-
-// قراءة القياسات والألوان من حقول الإدارة
-function lines(id){
- return $(id).value.split(/[,،\n]/)
-  .map(x=>x.trim()).filter(Boolean);
-}
-
-$('pFile').onchange=e=>{
- pendingFile=e.target.files[0]||null;
-
- if(pendingFile){
-  $('pImage').value='';
-  toast('تم اختيار الصورة، سترفع عند حفظ المنتج');
- }
-};
-
-$('pImage').oninput=()=>{
- if($('pImage').value.trim())pendingFile=null;
-};
-
-// حفظ المنتج مع رفع الصورة
-$('productForm').onsubmit=async e=>{
- e.preventDefault();
-
- const submitButton=e.submitter;
- if(submitButton)submitButton.disabled=true;
-
- try{
-  const id=$('editId').value||String(Date.now());
-  const old=products.find(p=>String(p.id)===String(id));
-
-  let image=$('pImage').value.trim()||(old?.image||'');
-
-  if(pendingFile){
-   toast('جاري رفع الصورة...');
-   image=await uploadImage(pendingFile);
-  }else if(image.startsWith('data:')){
-   toast('جاري رفع الصورة القديمة...');
-   image=await uploadImage(await oldImageToFile(image));
-  }
-
-  const p={
-   id,
-   name:$('pName').value.trim(),
-   price:Number($('pPrice').value),
-   category:$('pCategory').value.trim(),
-   image,
-   sizes:lines('pSizes'),
-   colors:lines('pColors'),
-   description:$('pDescription').value.trim()
-  };
-
-  if(!p.sizes.length||!p.colors.length){
-   toast('أضيفي قياساً ولوناً على الأقل');
-   return;
-  }
-
-  if(old){
-   products=products.map(x=>String(x.id)===String(id)?p:x);
-  }else{
-   products.unshift(p);
-  }
-
-  save();
-  clearForm();
-  renderShop();
-  renderAdmin();
-  toast('تم حفظ المنتج ورابط صورته');
-
- }catch(error){
-  console.error(error);
-  toast(error.message||'حدث خطأ أثناء رفع الصورة');
- }finally{
-  if(submitButton)submitButton.disabled=false;
- }
-};
-
-function clearForm(){
- $('productForm').reset();
- $('editId').value='';
- $('formTitle').textContent='إضافة منتج جديد';
- pendingFile=null;
-}
-
-$('cancelEdit').onclick=clearForm;
-
-$('logoutAdmin').onclick=()=>{
- history.replaceState(null,'',location.pathname+location.search);
- view('shop');
-};
-
-// عرض المنتجات في لوحة الإدارة
-function renderAdmin(){
- $('adminProducts').innerHTML=products.map(p=>`
-  <div class="adminitem">
-   <img src="${esc(p.image||'')}" alt="">
-   <div class="grow">
-    <b>${esc(p.name)}</b>
-    <div>${money(p.price)}</div>
-    <small>
-     القياسات: ${esc((p.sizes||[]).join('، '))}
-     | الألوان: ${esc((p.colors||[]).join('، '))}
-    </small>
-   </div>
-
-   <button class="light" onclick="window.editProduct('${esc(p.id)}')">تعديل</button>
-   <button class="remove" onclick="window.deleteProduct('${esc(p.id)}')">حذف</button>
-  </div>
- `).join('')||'<p class="empty">لا توجد منتجات بعد.</p>';
-}
-
-window.editProduct=id=>{
- const p=products.find(x=>String(x.id)===String(id));
- if(!p)return;
-
- $('editId').value=p.id;
- $('pName').value=p.name;
- $('pPrice').value=p.price;
- $('pCategory').value=p.category||'';
-
- $('pImage').value=
-  p.image?.startsWith('data:')?'':(p.image||'');
-
- $('pSizes').value=(p.sizes||[]).join('\n');
- $('pColors').value=(p.colors||[]).join('\n');
- $('pDescription').value=p.description||'';
-
- pendingFile=null;
- $('formTitle').textContent='تعديل المنتج';
-
- window.scrollTo({top:0,behavior:'smooth'});
-};
-
-window.deleteProduct=id=>{
- if(!confirm('هل أنت متأكدة من حذف المنتج؟'))return;
-
- products=products.filter(p=>String(p.id)!==String(id));
- save();
- renderShop();
- renderAdmin();
-};
-
-$('search').oninput=renderShop;
-$('categoryFilter').onchange=renderShop;
-
-// تشغيل المتجر
-setupGovernors();
-
-$('branchAddress').innerHTML='<option value="">اختاري طريقة التوصيل أولاً</option>';
-$('branchAddress').disabled=true;
-
-renderShop();
-renderCount();
-
-if(location.hash==='#admin'){
- openAdmin();
-}else{
- view('shop');
-}
-
-})();
+  deliveryDetails='توصيل للعنوان مباشرة - '+address
