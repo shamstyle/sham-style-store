@@ -6,9 +6,14 @@ const KEY='sham_style_products_v1';
 const CART='sham_style_cart_v1';
 const ADMIN_PASSWORD='4444';
 
+const config=window.SHAM_CONFIG||{};
+const SUPABASE_URL=(config.supabaseUrl||'').replace(/\/$/,'');
+const SUPABASE_KEY=config.supabaseKey||'';
+const BUCKET=config.storageBucket||'products';
+
 let products=JSON.parse(localStorage.getItem(KEY)||'[]');
 let cart=JSON.parse(localStorage.getItem(CART)||'[]');
-let pendingImage='';
+let pendingFile=null;
 
 const governors=[
 'دمشق','ريف دمشق','حلب','حمص','حماة',
@@ -36,6 +41,50 @@ function esc(s=''){
  }[c]));
 }
 
+// رفع الصورة إلى Supabase
+async function uploadImage(file){
+ if(!SUPABASE_URL||!SUPABASE_KEY){
+  throw new Error('إعدادات Supabase غير موجودة في config.js');
+ }
+
+ const ext=(file.name.split('.').pop()||'jpg')
+  .toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+
+ const fileName=Date.now()+'-'+
+ Math.random().toString(36).slice(2,10)+'.'+ext;
+
+ const uploadUrl=SUPABASE_URL+
+  '/storage/v1/object/'+BUCKET+'/'+fileName;
+
+ const response=await fetch(uploadUrl,{
+  method:'POST',
+  headers:{
+   'apikey':SUPABASE_KEY,
+   'Authorization':'Bearer '+SUPABASE_KEY,
+   'Content-Type':file.type||'image/jpeg',
+   'x-upsert':'false'
+  },
+  body:file
+ });
+
+ if(!response.ok){
+  const error=await response.text();
+  throw new Error('فشل رفع الصورة: '+error);
+ }
+
+ return SUPABASE_URL+
+  '/storage/v1/object/public/'+BUCKET+'/'+fileName;
+}
+
+// تحويل الصور القديمة المحفوظة بصيغة Base64
+async function oldImageToFile(data){
+ const response=await fetch(data);
+ const blob=await response.blob();
+ return new File([blob],'old-product.jpg',{
+  type:blob.type||'image/jpeg'
+ });
+}
+
 function view(name){
  document.querySelectorAll('.view').forEach(x=>x.hidden=true);
  $(name+'View').hidden=false;
@@ -48,7 +97,6 @@ function view(name){
  if(name==='admin') renderAdmin();
 }
 
-// دخول الإدارة بكلمة المرور
 function openAdmin(){
  if(location.hash!=='#admin')return;
 
@@ -63,7 +111,6 @@ function openAdmin(){
  }
 }
 
-// مراقبة رابط الإدارة
 window.addEventListener('hashchange',()=>{
  if(location.hash==='#admin'){
   openAdmin();
@@ -72,7 +119,6 @@ window.addEventListener('hashchange',()=>{
  }
 });
 
-// أزرار المتجر والسلة فقط
 document.querySelectorAll('.navbtn').forEach(b=>{
  b.onclick=()=>{
   if(b.dataset.view==='admin')return;
@@ -233,7 +279,7 @@ ${lines}
 
  let n=window.SHAM_CONFIG?.whatsappNumber||'';
 
- if(!n||n.includes('PUT_')){
+ if(!n){
   toast('تأكدي من رقم واتساب المتجر في config.js');
   return;
  }
@@ -250,70 +296,83 @@ function lines(id){
 }
 
 $('pFile').onchange=e=>{
- let f=e.target.files[0];
- if(!f)return;
+ pendingFile=e.target.files[0]||null;
 
- let r=new FileReader();
-
- r.onload=()=>{
-  pendingImage=r.result;
+ if(pendingFile){
   $('pImage').value='';
-  toast('تم تحميل الصورة للمعاينة المحلية');
- };
-
- r.readAsDataURL(f);
+  toast('تم اختيار الصورة، سترفع عند حفظ المنتج');
+ }
 };
 
 $('pImage').oninput=()=>{
- if($('pImage').value.trim())pendingImage='';
+ if($('pImage').value.trim())pendingFile=null;
 };
 
-$('productForm').onsubmit=e=>{
+$('productForm').onsubmit=async e=>{
  e.preventDefault();
 
- let id=$('editId').value||String(Date.now());
- let old=products.find(p=>p.id===id);
+ const submitButton=e.submitter;
+ if(submitButton)submitButton.disabled=true;
 
- let p={
-  id,
-  name:$('pName').value.trim(),
-  price:Number($('pPrice').value),
-  category:$('pCategory').value.trim(),
-  image:$('pImage').value.trim()||
-        pendingImage||(old?.image||''),
-  sizes:lines('pSizes'),
-  colors:lines('pColors'),
-  description:$('pDescription').value.trim()
- };
+ try{
+  let id=$('editId').value||String(Date.now());
+  let old=products.find(p=>p.id===id);
 
- if(!p.sizes.length||!p.colors.length){
-  toast('أضيفي قياساً ولوناً على الأقل');
-  return;
+  let image=$('pImage').value.trim()||
+   (old?.image||'');
+
+  if(pendingFile){
+   toast('جاري رفع الصورة...');
+   image=await uploadImage(pendingFile);
+  }else if(image.startsWith('data:')){
+   toast('جاري رفع الصورة القديمة...');
+   image=await uploadImage(await oldImageToFile(image));
+  }
+
+  let p={
+   id,
+   name:$('pName').value.trim(),
+   price:Number($('pPrice').value),
+   category:$('pCategory').value.trim(),
+   image,
+   sizes:lines('pSizes'),
+   colors:lines('pColors'),
+   description:$('pDescription').value.trim()
+  };
+
+  if(!p.sizes.length||!p.colors.length){
+   toast('أضيفي قياساً ولوناً على الأقل');
+   return;
+  }
+
+  if(old){
+   products=products.map(x=>x.id===id?p:x);
+  }else{
+   products.unshift(p);
+  }
+
+  save();
+  clearForm();
+  renderShop();
+  renderAdmin();
+  toast('تم حفظ المنتج ورابط صورته');
+ }catch(error){
+  console.error(error);
+  toast(error.message||'حدث خطأ أثناء رفع الصورة');
+ }finally{
+  if(submitButton)submitButton.disabled=false;
  }
-
- if(old){
-  products=products.map(x=>x.id===id?p:x);
- }else{
-  products.unshift(p);
- }
-
- save();
- clearForm();
- renderShop();
- renderAdmin();
- toast('تم حفظ المنتج');
 };
 
 function clearForm(){
  $('productForm').reset();
  $('editId').value='';
  $('formTitle').textContent='إضافة منتج جديد';
- pendingImage='';
+ pendingFile=null;
 }
 
 $('cancelEdit').onclick=clearForm;
 
-// إغلاق الإدارة والعودة للمتجر
 $('logoutAdmin').onclick=()=>{
  history.replaceState(null,'',location.pathname+location.search);
  view('shop');
@@ -357,7 +416,7 @@ window.editProduct=id=>{
  $('pColors').value=(p.colors||[]).join('\n');
  $('pDescription').value=p.description||'';
 
- pendingImage=p.image?.startsWith('data:')?p.image:'';
+ pendingFile=null;
 
  $('formTitle').textContent='تعديل المنتج';
 
@@ -376,7 +435,6 @@ window.deleteProduct=id=>{
 $('search').oninput=renderShop;
 $('categoryFilter').onchange=renderShop;
 
-// تشغيل المتجر وفتح الإدارة عند استخدام الرابط الخاص
 renderShop();
 renderCount();
 
@@ -387,4 +445,4 @@ if(location.hash==='#admin'){
 }
 
 })();
- 
+                       
