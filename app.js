@@ -193,36 +193,52 @@ function view(name){
  if(name==='admin')renderAdmin();
 }
 
+
 function showProductDetails(id){
  const p=products.find(x=>String(x.id)===String(id));
  if(!p)return;
 
  currentProductId=p.id;
 
+ let selectedSize='';
+ let selectedColor='';
+
  $('productDetails').innerHTML=`
   <div class="product-detail">
-   <img class="detail-image" src="${esc(p.image||'')}" alt="${esc(p.name)}">
+   <div class="detail-photo-wrap">
+    <img class="detail-image" src="${esc(p.image||'')}" alt="${esc(p.name)}">
+   </div>
+
    <div class="detail-info">
     <h2>${esc(p.name)}</h2>
     <div class="price detail-price">${money(p.price)}</div>
-    <p>${esc(p.description||'')}</p>
 
-    <label>اختاري القياس
-     <select id="detailSize">
-      <option value="">اختاري القياس</option>
-      ${(p.sizes||[]).map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('')}
-     </select>
-    </label>
+    ${p.description?`<p class="detail-description">${esc(p.description)}</p>`:''}
 
-    <label>اختاري اللون
-     <select id="detailColor">
-      <option value="">اختاري اللون</option>
-      ${(p.colors||[]).map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}
-     </select>
-    </label>
+    <div class="choice-section">
+     <h3>اختاري اللون</h3>
+     <div class="choice-options" id="detailColors">
+      ${(p.colors||[]).map((c,i)=>`
+       <button type="button" class="choice-btn color-choice"
+        data-value="${esc(c)}">${esc(c)}</button>
+      `).join('')}
+     </div>
+     <div class="selected-label" id="selectedColorLabel">لم يتم اختيار اللون</div>
+    </div>
 
-    <button type="button" class="primary full" id="detailAddToCart">
-     أضيفي إلى السلة
+    <div class="choice-section">
+     <h3>اختاري القياس</h3>
+     <div class="choice-options size-options" id="detailSizes">
+      ${(p.sizes||[]).map(s=>`
+       <button type="button" class="choice-btn size-choice"
+        data-value="${esc(s)}">${esc(s)}</button>
+      `).join('')}
+     </div>
+     <div class="selected-label" id="selectedSizeLabel">لم يتم اختيار القياس</div>
+    </div>
+
+    <button type="button" class="primary full detail-cart-btn" id="detailAddToCart">
+     أضيفي إلى السلة 🛍️
     </button>
    </div>
   </div>
@@ -230,6 +246,32 @@ function showProductDetails(id){
 
  hideViews();
  $('productDetailsView').hidden=false;
+
+ $('detailColors').querySelectorAll('.choice-btn').forEach(btn=>{
+  btn.onclick=()=>{
+   selectedColor=btn.dataset.value;
+   $('detailColors').querySelectorAll('.choice-btn').forEach(b=>
+    b.classList.toggle('selected',b===btn)
+   );
+   $('selectedColorLabel').textContent='اللون المختار: '+selectedColor;
+  };
+ });
+
+ $('detailSizes').querySelectorAll('.choice-btn').forEach(btn=>{
+  btn.onclick=()=>{
+   selectedSize=btn.dataset.value;
+   $('detailSizes').querySelectorAll('.choice-btn').forEach(b=>
+    b.classList.toggle('selected',b===btn)
+   );
+   $('selectedSizeLabel').textContent='القياس المختار: '+selectedSize;
+  };
+ });
+
+ $('detailAddToCart').onclick=()=>{
+  addProductToCart(currentProductId,selectedSize,selectedColor);
+ };
+}
+ 
 
  $('detailAddToCart').onclick=()=>addProductToCart(
   currentProductId,
