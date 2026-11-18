@@ -776,3 +776,219 @@ $('sendOrder').onclick=()=>{
    return;
   }
   deliveryDetails='توصيل للعنوان مباشرة - '+address
+  }else{
+   if(!branch){
+    toast('اختاري فرع الاستلام أولاً');
+    return;
+   }
+   deliveryDetails=delivery+' - استلام من فرع - '+branch;
+  }
+
+  const lines=cart.map((item,i)=>{
+   const p=products.find(x=>String(x.id)===String(item.id))||{};
+   return [
+    (i+1)+') '+(p.name||'منتج'),
+    'القياس: '+(item.size||'غير محدد'),
+    'اللون: '+(item.color||'غير محدد'),
+    'الكمية: '+item.qty,
+    'السعر: '+money(p.price),
+    'رابط الصورة: '+(p.image||'لا يوجد')
+   ].join('\n');
+  }).join('\n\n');
+
+  const total=cart.reduce((sum,item)=>{
+   const p=products.find(x=>String(x.id)===String(item.id))||{};
+   return sum+Number(item.qty||0)*Number(p.price||0);
+  },0);
+
+  const message=[
+   'طلب جديد من متجر شام ستايل 🩷',
+   'الاسم: '+name,
+   'الهاتف: '+phone,
+   'المحافظة: '+gov,
+   'طريقة التوصيل: '+delivery,
+   'العنوان/الفرع: '+deliveryDetails,
+   '',
+   'تفاصيل الطلب:',
+   lines,
+   '',
+   'الإجمالي: '+money(total)
+  ].join('\n');
+
+  const whatsapp=config.whatsappNumber||'963997050453';
+  window.open(
+   'https://wa.me/'+whatsapp+'?text='+encodeURIComponent(message),
+   '_blank'
+  );
+
+  toast('تم تجهيز الطلب للإرسال عبر واتساب 🩷');
+};
+
+/* إدارة المنتجات */
+
+function clearForm(){
+ $('productForm').reset();
+ $('editId').value='';
+ pendingFile=null;
+ $('pFile').value='';
+ const btn=$('productForm').querySelector('[type="submit"]');
+ if(btn)btn.textContent='إضافة المنتج';
+}
+
+$('pFile').onchange=()=>{
+ pendingFile=$('pFile').files[0]||null;
+};
+
+$('productForm').onsubmit=async e=>{
+ e.preventDefault();
+
+ if(!adminSession){
+  toast('سجّلي الدخول للإدارة أولاً');
+  return;
+ }
+
+ const btn=$('productForm').querySelector('[type="submit"]');
+ btn.disabled=true;
+ btn.textContent='جاري الحفظ...';
+
+ try{
+  const id=$('editId').value||String(Date.now());
+  const oldProduct=products.find(p=>String(p.id)===String(id));
+
+  let image=$('pImage').value.trim();
+
+  if(pendingFile){
+   image=await uploadImage(pendingFile);
+  }else if(!image&&oldProduct){
+   image=oldProduct.image||'';
+  }
+
+  const product={
+   id,
+   name:$('pName').value.trim(),
+   price:Number($('pPrice').value||0),
+   category:$('pCategory').value.trim(),
+   image,
+   sizes:$('pSizes').value.split(',').map(x=>x.trim()).filter(Boolean),
+   colors:$('pColors').value.split(',').map(x=>x.trim()).filter(Boolean),
+   description:$('pDescription').value.trim(),
+   owner_id:OWNER_ID
+  };
+
+  if(!product.name){
+   toast('اكتبي اسم المنتج');
+   return;
+  }
+
+  if(oldProduct){
+   await apiProducts('PATCH',id,product);
+  }else{
+   await apiProducts('POST',null,product);
+  }
+
+  const updated=await apiProducts('GET');
+  products=updated.map(fromDatabase);
+  save();
+
+  clearForm();
+  renderShop();
+  renderAdmin();
+  toast('تم حفظ المنتج بنجاح 🩷');
+
+ }catch(error){
+  console.error(error);
+  toast('تعذر حفظ المنتج: '+error.message);
+ }finally{
+  btn.disabled=false;
+  btn.textContent='إضافة المنتج';
+ }
+};
+
+function renderAdmin(){
+ const container=$('adminProducts');
+ if(!container)return;
+
+ container.innerHTML=products.map(p=>`
+  <div class="admin-product">
+   <img src="${esc(p.image||'')}" alt="${esc(p.name)}">
+   <div class="admin-product-info">
+    <b>${esc(p.name)}</b>
+    <div>${money(p.price)}</div>
+    <div>${esc(p.category||'')}</div>
+    <div>القياسات: ${esc((p.sizes||[]).join('، '))}</div>
+    <div>الألوان: ${esc((p.colors||[]).join('، '))}</div>
+   </div>
+   <div class="admin-actions">
+    <button type="button" class="edit-product" data-id="${esc(p.id)}">تعديل</button>
+    <button type="button" class="delete-product" data-id="${esc(p.id)}">حذف</button>
+   </div>
+  </div>
+ `).join('')||'<p class="empty">لا توجد منتجات حالياً.</p>';
+
+ container.querySelectorAll('.edit-product').forEach(btn=>{
+  btn.onclick=()=>{
+   const p=products.find(x=>String(x.id)===String(btn.dataset.id));
+   if(!p)return;
+
+   $('editId').value=p.id;
+   $('pName').value=p.name||'';
+   $('pPrice').value=p.price||'';
+   $('pCategory').value=p.category||'';
+   $('pImage').value=p.image||'';
+   $('pSizes').value=(p.sizes||[]).join(', ');
+   $('pColors').value=(p.colors||[]).join(', ');
+   $('pDescription').value=p.description||'';
+
+   pendingFile=null;
+   $('pFile').value='';
+
+   const submit=$('productForm').querySelector('[type="submit"]');
+   if(submit)submit.textContent='حفظ التعديلات';
+
+   $('productForm').scrollIntoView({behavior:'smooth'});
+  };
+ });
+
+ container.querySelectorAll('.delete-product').forEach(btn=>{
+  btn.onclick=async()=>{
+   if(!confirm('متأكدة من حذف هذا المنتج؟'))return;
+
+   try{
+    await apiProducts('DELETE',btn.dataset.id);
+    products=products.filter(p=>String(p.id)!==String(btn.dataset.id));
+    save();
+    renderShop();
+    renderAdmin();
+    toast('تم حذف المنتج');
+   }catch(error){
+    toast('تعذر حذف المنتج: '+error.message);
+   }
+  };
+ });
+}
+
+$('logoutAdmin').onclick=()=>{
+ clearSession();
+ history.replaceState(null,'',location.pathname+location.search);
+ view('shop');
+ loadPublicProducts();
+ toast('تم تسجيل الخروج');
+};
+
+/* البحث والتشغيل */
+
+$('search').oninput=renderShop;
+$('categoryFilter').onchange=renderShop;
+
+setupGovernors();
+renderShop();
+renderCount();
+
+if(location.hash==='#admin'){
+ openAdmin();
+}else{
+ view('shop');
+ loadPublicProducts();
+}
+
+})();
