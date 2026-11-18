@@ -17,7 +17,7 @@ const TABLE='sham_style_products';
 
 let products=[];
 let cart=JSON.parse(localStorage.getItem(CART)||'[]');
-let pendingFile=null;
+let pendingFiles=[];
 let currentProductId=null;
 let adminSession=null;
 let loginBusy=false;
@@ -28,7 +28,7 @@ try{
 }catch(e){products=[];}
 
 const governors=[
-'دمشق','ريف دمشق','حلب','حمص','حماة',
+'دمشق','حلب','حمص','حماة',
 'اللاذقية','طرطوس','إدلب','الحسكة',
 'دير الزور','الرقة','درعا','السويداء','القنيطرة'
 ];
@@ -332,13 +332,25 @@ async function apiProducts(method='GET',id=null,data=null){
  return text?JSON.parse(text):[];
 }
 
+function getProductImages(product){
+ if(Array.isArray(product?.images))return product.images.filter(Boolean).slice(0,5);
+ const raw=product?.image||'';
+ if(Array.isArray(raw))return raw.filter(Boolean).slice(0,5);
+ if(typeof raw==='string'&&raw.trim().startsWith('[')){
+  try{const parsed=JSON.parse(raw);if(Array.isArray(parsed))return parsed.filter(Boolean).slice(0,5);}catch(e){}
+ }
+ return raw?[raw]:[];
+}
+
 function fromDatabase(row){
+ let images=[];
+ if(typeof row.image==='string'&&row.image.trim().startsWith('[')){
+  try{const parsed=JSON.parse(row.image);if(Array.isArray(parsed))images=parsed.filter(Boolean).slice(0,5);}catch(e){}
+ }
+ if(!images.length&&row.image)images=[row.image];
  return {
-  id:String(row.id),
-  name:row.name||'',
-  price:Number(row.price||0),
-  category:row.category||'',
-  image:row.image||'',
+  id:String(row.id),name:row.name||'',price:Number(row.price||0),
+  category:row.category||'',image:images[0]||'',images,
   sizes:Array.isArray(row.sizes)?row.sizes:[],
   colors:Array.isArray(row.colors)?row.colors:[],
   description:row.description||''
@@ -383,7 +395,7 @@ async function syncLocalProducts(localProducts){
    name:p.name||'منتج',
    price:Number(p.price||0),
    category:p.category||'',
-   image:p.image||'',
+   image:JSON.stringify(getProductImages(p)),
    sizes:Array.isArray(p.sizes)?p.sizes:[],
    colors:Array.isArray(p.colors)?p.colors:[],
    description:p.description||'',
@@ -483,74 +495,51 @@ function view(name){
 function showProductDetails(id){
  const p=products.find(x=>String(x.id)===String(id));
  if(!p)return;
-
  currentProductId=p.id;
-
- let selectedSize='';
- let selectedColor='';
-
+ let selectedSize='',selectedColor='';
+ const images=getProductImages(p);
  $('productDetails').innerHTML=`
   <div class="product-detail">
    <div class="detail-photo-wrap">
-    <img class="detail-image" src="${esc(p.image||'')}" alt="${esc(p.name)}">
+    <img class="detail-image" id="detailMainImage" src="${esc(images[0]||'')}" alt="${esc(p.name)}">
+    ${images.length>1?`<div class="detail-thumbnails" id="detailThumbnails">
+     ${images.map((src,i)=>`<button type="button" class="detail-thumb ${i===0?'selected':''}" data-image-index="${i}" aria-label="عرض الصورة ${i+1}"><img src="${esc(src)}" alt=""></button>`).join('')}
+    </div>`:''}
    </div>
    <div class="detail-info">
-    <h2>${esc(p.name)}</h2>
-    <div class="price detail-price">${money(p.price)}</div>
-
+    <h2>${esc(p.name)}</h2><div class="price detail-price">${money(p.price)}</div>
     ${p.description?`<p class="detail-description">${esc(p.description)}</p>`:''}
-
-    <div class="choice-section">
-     <h3>اختاري اللون</h3>
+    <div class="choice-section"><h3>اختاري اللون</h3>
      <div class="choice-options" id="detailColors">
-      ${(p.colors||[]).map(c=>`
-       <button type="button" class="choice-btn color-choice" data-value="${esc(c)}">${esc(c)}</button>
-      `).join('')}
-     </div>
-     <div class="selected-label" id="selectedColorLabel">لم يتم اختيار اللون</div>
+      ${(p.colors||[]).map(c=>`<button type="button" class="choice-btn color-choice" data-value="${esc(c)}">${esc(c)}</button>`).join('')}
+     </div><div class="selected-label" id="selectedColorLabel">لم يتم اختيار اللون</div>
     </div>
-
-    <div class="choice-section">
-     <h3>اختاري القياس</h3>
+    <div class="choice-section"><h3>اختاري القياس</h3>
      <div class="choice-options size-options" id="detailSizes">
-      ${(p.sizes||[]).map(s=>`
-       <button type="button" class="choice-btn size-choice" data-value="${esc(s)}">${esc(s)}</button>
-      `).join('')}
-     </div>
-     <div class="selected-label" id="selectedSizeLabel">لم يتم اختيار القياس</div>
+      ${(p.sizes||[]).map(x=>`<button type="button" class="choice-btn size-choice" data-value="${esc(x)}">${esc(x)}</button>`).join('')}
+     </div><div class="selected-label" id="selectedSizeLabel">لم يتم اختيار القياس</div>
     </div>
-
     <button type="button" class="primary full detail-cart-btn" id="detailAddToCart">أضيفي إلى السلة 🛍️</button>
    </div>
-  </div>
- `;
-
- hideViews();
- $('productDetailsView').hidden=false;
-
- $('detailColors').querySelectorAll('.choice-btn').forEach(btn=>{
+  </div>`;
+ hideViews();$('productDetailsView').hidden=false;
+ $('detailThumbnails')?.querySelectorAll('[data-image-index]').forEach(btn=>{
   btn.onclick=()=>{
-   selectedColor=btn.dataset.value;
-   $('detailColors').querySelectorAll('.choice-btn').forEach(b=>
-    b.classList.toggle('selected',b===btn)
-   );
-   $('selectedColorLabel').textContent='اللون المختار: '+selectedColor;
+   $('detailMainImage').src=images[Number(btn.dataset.imageIndex)];
+   $('detailThumbnails').querySelectorAll('.detail-thumb').forEach(b=>b.classList.toggle('selected',b===btn));
   };
  });
-
- $('detailSizes').querySelectorAll('.choice-btn').forEach(btn=>{
-  btn.onclick=()=>{
-   selectedSize=btn.dataset.value;
-   $('detailSizes').querySelectorAll('.choice-btn').forEach(b=>
-    b.classList.toggle('selected',b===btn)
-   );
-   $('selectedSizeLabel').textContent='القياس المختار: '+selectedSize;
-  };
+ $('detailColors').querySelectorAll('.choice-btn').forEach(btn=>btn.onclick=()=>{
+  selectedColor=btn.dataset.value;
+  $('detailColors').querySelectorAll('.choice-btn').forEach(b=>b.classList.toggle('selected',b===btn));
+  $('selectedColorLabel').textContent='اللون المختار: '+selectedColor;
  });
-
- $('detailAddToCart').onclick=()=>{
-  addProductToCart(currentProductId,selectedSize,selectedColor);
- };
+ $('detailSizes').querySelectorAll('.choice-btn').forEach(btn=>btn.onclick=()=>{
+  selectedSize=btn.dataset.value;
+  $('detailSizes').querySelectorAll('.choice-btn').forEach(b=>b.classList.toggle('selected',b===btn));
+  $('selectedSizeLabel').textContent='القياس المختار: '+selectedSize;
+ });
+ $('detailAddToCart').onclick=()=>addProductToCart(currentProductId,selectedSize,selectedColor);
 }
 
 $('backToShop').onclick=()=>view('shop');
@@ -829,14 +818,20 @@ $('sendOrder').onclick=()=>{
 function clearForm(){
  $('productForm').reset();
  $('editId').value='';
- pendingFile=null;
+ pendingFiles=[];
  $('pFile').value='';
  const btn=$('productForm').querySelector('[type="submit"]');
  if(btn)btn.textContent='إضافة المنتج';
 }
 
+$('pFile').multiple=true;
+$('pFile').accept='image/*';
 $('pFile').onchange=()=>{
- pendingFile=$('pFile').files[0]||null;
+ pendingFiles=Array.from($('pFile').files||[]);
+ if(pendingFiles.length>5){
+  pendingFiles=pendingFiles.slice(0,5);
+  toast('يمكنك اختيار 5 صور كحد أقصى للمنتج');
+ }
 };
 
 $('productForm').onsubmit=async e=>{
@@ -855,20 +850,23 @@ $('productForm').onsubmit=async e=>{
   const id=$('editId').value||String(Date.now());
   const oldProduct=products.find(p=>String(p.id)===String(id));
 
-  let image=$('pImage').value.trim();
-
-  if(pendingFile){
-   image=await uploadImage(pendingFile);
-  }else if(!image&&oldProduct){
-   image=oldProduct.image||'';
+  let images=oldProduct?getProductImages(oldProduct):[];
+  const imageUrl=$('pImage').value.trim();
+  if(pendingFiles.length){
+   images=[];
+   for(const file of pendingFiles)images.push(await uploadImage(file));
+  }else if(imageUrl){
+   images=[imageUrl];
   }
+  images=images.filter(Boolean).slice(0,5);
 
   const product={
    id,
    name:$('pName').value.trim(),
    price:Number($('pPrice').value||0),
    category:$('pCategory').value.trim(),
-   image,
+   image:images[0]||'',
+   images,
    sizes:$('pSizes').value.split(',').map(x=>x.trim()).filter(Boolean),
    colors:$('pColors').value.split(',').map(x=>x.trim()).filter(Boolean),
    description:$('pDescription').value.trim(),
@@ -880,10 +878,12 @@ $('productForm').onsubmit=async e=>{
    return;
   }
 
+  const databaseProduct={...product,image:JSON.stringify(product.images)};
+  delete databaseProduct.images;
   if(oldProduct){
-   await apiProducts('PATCH',id,product);
+   await apiProducts('PATCH',id,databaseProduct);
   }else{
-   await apiProducts('POST',null,product);
+   await apiProducts('POST',null,databaseProduct);
   }
 
   const updated=await apiProducts('GET');
@@ -934,12 +934,12 @@ function renderAdmin(){
    $('pName').value=p.name||'';
    $('pPrice').value=p.price||'';
    $('pCategory').value=p.category||'';
-   $('pImage').value=p.image||'';
+   $('pImage').value='';
    $('pSizes').value=(p.sizes||[]).join(', ');
    $('pColors').value=(p.colors||[]).join(', ');
    $('pDescription').value=p.description||'';
 
-   pendingFile=null;
+   pendingFiles=[];
    $('pFile').value='';
 
    const submit=$('productForm').querySelector('[type="submit"]');
@@ -992,3 +992,4 @@ if(location.hash==='#admin'){
 }
 
 })();
+  
