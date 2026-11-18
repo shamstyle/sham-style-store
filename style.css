@@ -1,3 +1,4 @@
+
 * {
   box-sizing: border-box;
 }
@@ -97,43 +98,124 @@ main {
   flex: 1;
 }
 
+/* شبكة المنتجات */
 .products {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
 }
 
-.product,
-.panel,
-.checkout,
-.adminitem {
+.product {
   background: white;
   border: 1px solid #f0dfe6;
-  border-radius: 15px;
-  padding: 14px;
+  border-radius: 13px;
+  padding: 8px;
   box-shadow: 0 5px 18px #6e40500b;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.product-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: right;
+  cursor: pointer;
+  font: inherit;
 }
 
 .product img {
+  display: block;
   width: 100%;
-  height: 245px;
+  height: 165px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 9px;
   background: #f8f0f3;
 }
 
 .product h3 {
-  margin: 10px 0 5px;
+  font-size: 14px;
+  margin: 9px 2px 6px;
+  line-height: 1.5;
+  min-height: 40px;
 }
 
 .price {
   color: #a34f75;
   font-weight: bold;
+  font-size: 15px;
 }
 
-.product select {
+.product .price {
+  margin: 4px 2px 7px;
+}
+
+.details-hint {
+  display: block;
+  color: #9b7b8b;
+  font-size: 11px;
+  margin: 7px 2px 3px;
+}
+
+/* تفاصيل المنتج */
+#productDetailsView {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+#productDetails {
+  margin-top: 15px;
+}
+
+.product-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  background: white;
+  border: 1px solid #f0dfe6;
+  border-radius: 17px;
+  padding: 18px;
+  box-shadow: 0 5px 18px #6e40500b;
+}
+
+.detail-image {
   width: 100%;
-  margin: 7px 0;
+  height: 430px;
+  object-fit: contain;
+  background: #fff7fa;
+  border-radius: 12px;
+}
+
+.detail-info h2 {
+  margin: 5px 0 12px;
+  font-size: 23px;
+}
+
+.detail-price {
+  font-size: 21px;
+  margin-bottom: 15px;
+}
+
+.detail-info p {
+  color: #765c68;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.detail-info label {
+  margin-top: 17px;
+}
+
+.detail-info select {
+  margin-top: 7px;
+}
+
+.detail-info .primary {
+  margin-top: 20px;
 }
 
 .primary {
@@ -191,7 +273,12 @@ label textarea {
 }
 
 .checkout {
+  background: white;
+  border: 1px solid #f0dfe6;
+  border-radius: 15px;
+  padding: 14px;
   margin-top: 22px;
+  box-shadow: 0 5px 18px #6e40500b;
 }
 
 .total {
@@ -220,6 +307,7 @@ label textarea {
 
 .cartrow .grow {
   flex: 1;
+  min-width: 0;
 }
 
 .remove {
@@ -228,6 +316,7 @@ label textarea {
   color: #9d456c;
   padding: 8px;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .adminhead,
@@ -240,6 +329,11 @@ label textarea {
 }
 
 .panel {
+  background: white;
+  border: 1px solid #f0dfe6;
+  border-radius: 15px;
+  padding: 14px;
+  box-shadow: 0 5px 18px #6e40500b;
   margin: 18px 0;
 }
 
@@ -252,6 +346,10 @@ label textarea {
   display: flex;
   align-items: center;
   gap: 12px;
+  background: white;
+  border: 1px solid #f0dfe6;
+  border-radius: 15px;
+  padding: 14px;
 }
 
 .adminitem img {
@@ -263,6 +361,7 @@ label textarea {
 
 .adminitem .grow {
   flex: 1;
+  min-width: 0;
 }
 
 .empty {
@@ -289,11 +388,67 @@ footer {
   border-radius: 10px;
   display: none;
   max-width: 90%;
+  z-index: 9999;
 }
 
+/* الموبايل */
 @media (max-width: 600px) {
+  main {
+    margin: 15px auto;
+    padding: 0 10px;
+  }
+
+  .hero {
+    padding: 24px 14px;
+  }
+
   .hero h1 {
-    font-size: 24px;
+    font-size: 23px;
+  }
+
+  .hero p {
+    letter-spacing: 2px;
+  }
+
+  .products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .product {
+    padding: 6px;
+    border-radius: 11px;
+  }
+
+  .product img {
+    height: 145px;
+  }
+
+  .product h3 {
+    font-size: 13px;
+    min-height: 38px;
+  }
+
+  .product .price {
+    font-size: 13px;
+  }
+
+  .details-hint {
+    font-size: 10px;
+  }
+
+  .product-detail {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .detail-image {
+    height: 330px;
+  }
+
+  .detail-info h2 {
+    font-size: 20px;
   }
 
   .formgrid {
@@ -316,4 +471,33 @@ footer {
     width: 100%;
     justify-content: center;
   }
+
+  .navbtn {
+    padding: 9px 11px;
+    font-size: 13px;
+  }
+
+  .cartrow {
+    gap: 8px;
+  }
+
+  .cartrow img {
+    width: 65px;
+    height: 75px;
+  }
+
+  .adminitem {
+    flex-wrap: wrap;
+  }
 }
+
+@media (max-width: 350px) {
+  .product img {
+    height: 120px;
+  }
+
+  .product h3 {
+    font-size: 12px;
+  }
+  }
+  
