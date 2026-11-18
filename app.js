@@ -273,12 +273,7 @@ function showProductDetails(id){
 }
  
 
- $('detailAddToCart').onclick=()=>addProductToCart(
-  currentProductId,
-  $('detailSize').value,
-  $('detailColor').value
- );
-}
+ 
 
 $('backToShop').onclick=()=>{
  view('shop');
