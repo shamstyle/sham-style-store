@@ -138,11 +138,10 @@ async function uploadImage(file){
  const response=await fetch(uploadUrl,{
   method:'POST',
   headers:{
-   'apikey':SUPABASE_KEY,
-   'Authorization':'Bearer '+SUPABASE_KEY,
-   'Content-Type':file.type||'image/jpeg',
-   'x-upsert':'false'
-  },
+ 'apikey':SUPABASE_KEY,
+ 'Content-Type':file.type||'image/jpeg',
+ 'x-upsert':'false'
+},
   body:file
  });
 
