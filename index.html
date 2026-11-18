@@ -71,7 +71,6 @@
           <select id="governorate">
             <option value="">اختاري المحافظة</option>
             <option value="دمشق">دمشق</option>
-            <option value="ريف دمشق">ريف دمشق</option>
             <option value="حلب">حلب</option>
             <option value="إدلب">إدلب</option>
             <option value="طرطوس">طرطوس</option>
@@ -151,8 +150,8 @@
           <input id="pImage" type="url" placeholder="https://...">
         </label>
 
-        <label class="wide">أو اختاري صورة من جهازك
-          <input id="pFile" type="file" accept="image/*">
+        <label class="wide">اختاري حتى 5 صور من جهازك
+          <input id="pFile" type="file" accept="image/*" multiple>
         </label>
 
         <label class="wide">القياسات — كل قياس بسطر منفصل
@@ -174,7 +173,7 @@
       </div>
 
       <p class="hint">
-        يفضّل استخدام رابط صورة عام حتى تظهر الصورة للزبائن في واتساب.
+        يمكنك اختيار حتى 5 صور للمنتج. ستظهر الصورة الأولى في واجهة المتجر وباقي الصور داخل تفاصيل المنتج.
       </p>
     </form>
 
@@ -191,5 +190,4 @@
 <script src="app.js?v=3"></script>
 
 </body>
-  </html>
-  
+</html>
