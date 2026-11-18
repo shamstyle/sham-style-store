@@ -21,7 +21,6 @@
   <nav>
     <button class="navbtn active" data-view="shop">المتجر</button>
     <button class="navbtn" data-view="cart">السلة <span id="cartCount">0</span></button>
-    
   </nav>
 </header>
 
@@ -41,11 +40,19 @@
     </div>
 
     <div id="products" class="products"></div>
+
     <p id="emptyShop" class="empty" hidden>
       لا توجد منتجات حالياً. أضيفي منتجاتك من لوحة الإدارة.
     </p>
   </section>
 
+  <!-- تفاصيل المنتج -->
+  <section id="productDetailsView" class="view" hidden>
+    <button type="button" id="backToShop" class="light">رجوع للمتجر</button>
+    <div id="productDetails"></div>
+  </section>
+
+  <!-- السلة -->
   <section id="cartView" class="view" hidden>
     <h1>سلة التسوق</h1>
     <div id="cartItems"></div>
@@ -65,20 +72,36 @@
         <label>المحافظة
           <select id="governorate">
             <option value="">اختاري المحافظة</option>
+            <option value="دمشق">دمشق</option>
+            <option value="ريف دمشق">ريف دمشق</option>
+            <option value="حلب">حلب</option>
+            <option value="إدلب">إدلب</option>
+            <option value="طرطوس">طرطوس</option>
+            <option value="اللاذقية">اللاذقية</option>
+            <option value="حماة">حماة</option>
+            <option value="حمص">حمص</option>
+            <option value="السويداء">السويداء</option>
+            <option value="درعا">درعا</option>
           </select>
         </label>
 
         <label>طريقة التوصيل
           <select id="delivery">
             <option value="">اختاري طريقة التوصيل</option>
-            <option>قدَموس</option>
-            <option>مسارات</option>
-            <option>الهرم</option>
+            <option value="قدَموس">قدَموس</option>
+            <option value="مسارات والهرم">مسارات والهرم</option>
+            <option value="توصيل ضمن دمشق">توصيل ضمن دمشق</option>
           </select>
         </label>
 
-        <label class="wide">الفرع / المنطقة / العنوان
-          <input id="branchAddress" placeholder="اسم الفرع أو المنطقة والعنوان بالتفصيل">
+        <label class="wide">الفرع
+          <select id="branchAddress">
+            <option value="">اختاري الفرع بعد اختيار طريقة التوصيل</option>
+          </select>
+        </label>
+
+        <label class="wide">العنوان بالتفصيل
+          <input id="customerAddress" placeholder="المنطقة والشارع وأقرب نقطة دالة">
         </label>
 
         <label class="wide">ملاحظات إضافية
@@ -100,6 +123,7 @@
     </div>
   </section>
 
+  <!-- الإدارة -->
   <section id="adminView" class="view" hidden>
     <div class="adminhead">
       <div>
@@ -170,5 +194,5 @@
 <script src="app.js"></script>
 
 </body>
-        </html>
-        
+                                                                                 </html>
+                                                                                 
