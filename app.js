@@ -424,20 +424,75 @@ async function enterAdmin(){
  }
 }
 
-async function uploadImage(file){
-
-  if(!SUPABASE_URL||!SUPABASE_KEY){
-    throw new Error('إعدادات Supabase غير موجودة في config.js');
+async function uploadImage(file) {
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    throw new Error('إعدادات رفع الصور غير مكتملة');
   }
 
-  const ext=(file.name.split('.').pop()||'jpg')
-    .toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+  let blob;
+  let fileName;
 
-  const fileName=Date.now()+'-'+
-    Math.random().toString(36).slice(2,10)+'.'+ext;
+  try {
+    const bitmap = await createImageBitmap(file);
 
-  const uploadUrl=SUPABASE_URL+
-    '/storage/v1/object/'+BUCKET+'/'+fileName;
+    const maxSize = 2000;
+    const scale = Math.min(
+      1,
+      maxSize / Math.max(bitmap.width, bitmap.height)
+    );
+
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+    bitmap.close();
+
+    blob = await new Promise((resolve, reject) => {
+      canvas.toBlob(
+        result => result ? resolve(result) : reject(
+          new Error('تعذر تجهيز الصورة')
+        ),
+        'image/jpeg',
+        0.88
+      );
+    });
+
+    fileName = 'product_' + Date.now() + '_' +
+      Math.random().toString(36).slice(2) + '.jpg';
+
+  } catch (error) {
+    throw new Error(
+      'المتصفح لم يستطع قراءة الصورة. جربي تحويلها إلى JPG أولاً.'
+    );
+  }
+
+  const uploadUrl =
+    SUPABASE_URL + '/storage/v1/object/' + BUCKET + '/' + fileName;
+
+  const response = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' +
+        (adminSession?.access_token || SUPABASE_KEY),
+      'Content-Type': 'image/jpeg',
+      'x-upsert': 'false'
+    },
+    body: blob
+  });
+
+  if (!response.ok) {
+    throw new Error('فشل رفع الصورة: ' + await response.text());
+  }
+
+  return SUPABASE_URL +
+    '/storage/v1/object/public/' + BUCKET + '/' + fileName;
+}
 
   const response=await fetch(uploadUrl,{
     method:'POST',
