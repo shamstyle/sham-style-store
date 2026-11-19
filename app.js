@@ -425,36 +425,39 @@ async function enterAdmin(){
 }
 
 async function uploadImage(file){
- if(!SUPABASE_URL||!SUPABASE_KEY){
-  throw new Error('إعدادات Supabase غير موجودة في config.js');
- }
+async function uploadImage(file){
 
- const ext=(file.name.split('.').pop()||'jpg')
-  .toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+  if(!SUPABASE_URL||!SUPABASE_KEY){
+    throw new Error('إعدادات Supabase غير موجودة في config.js');
+  }
 
- const fileName=Date.now()+'-'+
-  Math.random().toString(36).slice(2,10)+'.'+ext;
+  const ext=(file.name.split('.').pop()||'jpg')
+    .toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
 
- const uploadUrl=SUPABASE_URL+
-  '/storage/v1/object/'+BUCKET+'/'+fileName;
+  const fileName=Date.now()+'-'+
+    Math.random().toString(36).slice(2,10)+'.'+ext;
 
- const response=await fetch(uploadUrl,{
-  method:'POST',
-  headers:{
-   'apikey':SUPABASE_KEY,
-   'Content-Type':file.type||'image/jpeg',
-   'x-upsert':'false'
-  },
-  body:file
- });
+  const uploadUrl=SUPABASE_URL+
+    '/storage/v1/object/'+BUCKET+'/'+fileName;
 
- if(!response.ok){
-  const error=await response.text();
-  throw new Error('فشل رفع الصورة: '+error);
- }
+  const response=await fetch(uploadUrl,{
+    method:'POST',
+    headers:{
+      'apikey':SUPABASE_KEY,
+      'Authorization':'Bearer '+(adminSession?.access_token||SUPABASE_KEY),
+      'Content-Type':file.type||'image/jpeg',
+      'x-upsert':'false'
+    },
+    body:file
+  });
 
- return SUPABASE_URL+
-  '/storage/v1/object/public/'+BUCKET+'/'+fileName;
+  if(!response.ok){
+    const error=await response.text();
+    throw new Error('فشل رفع الصورة: '+error);
+  }
+
+  return SUPABASE_URL+
+    '/storage/v1/object/public/'+BUCKET+'/'+fileName;
 }
 
 async function oldImageToFile(data){
