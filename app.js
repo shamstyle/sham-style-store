@@ -425,7 +425,6 @@ async function enterAdmin(){
 }
 
 async function uploadImage(file){
-async function uploadImage(file){
 
   if(!SUPABASE_URL||!SUPABASE_KEY){
     throw new Error('إعدادات Supabase غير موجودة في config.js');
