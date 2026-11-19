@@ -494,25 +494,7 @@ async function uploadImage(file) {
     '/storage/v1/object/public/' + BUCKET + '/' + fileName;
 }
 
-  const response=await fetch(uploadUrl,{
-    method:'POST',
-    headers:{
-      'apikey':SUPABASE_KEY,
-      'Authorization':'Bearer '+(adminSession?.access_token||SUPABASE_KEY),
-      'Content-Type':file.type||'image/jpeg',
-      'x-upsert':'false'
-    },
-    body:file
-  });
-
-  if(!response.ok){
-    const error=await response.text();
-    throw new Error('فشل رفع الصورة: '+error);
-  }
-
-  return SUPABASE_URL+
-    '/storage/v1/object/public/'+BUCKET+'/'+fileName;
-}
+  
 
 async function oldImageToFile(data){
  const response=await fetch(data);
